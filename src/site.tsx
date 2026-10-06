@@ -7,19 +7,32 @@ import type { SiteInfo } from "./api-types.ts";
 
 interface SiteState {
   site: SiteInfo | null;
+  /** The last load failed (no connection); staff pages offer "Обновить". */
+  failed: boolean;
   /** Resolves when the new info is in place (or the request failed). */
   reload: () => Promise<void>;
 }
 
-const SiteContext = createContext<SiteState>({ site: null, reload: async () => {} });
+const SiteContext = createContext<SiteState>({ site: null, failed: false, reload: async () => {} });
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [site, setSite] = useState<SiteInfo | null>(null);
-  const reload = useCallback(() => api<SiteInfo>("/api/site").then(setSite, () => {}), []);
+  const [failed, setFailed] = useState(false);
+  const reload = useCallback(
+    () =>
+      api<SiteInfo>("/api/site").then(
+        (s) => {
+          setSite(s);
+          setFailed(false);
+        },
+        () => setFailed(true),
+      ),
+    [],
+  );
   useEffect(() => {
     void reload();
   }, [reload]);
-  return <SiteContext.Provider value={{ site, reload }}>{children}</SiteContext.Provider>;
+  return <SiteContext.Provider value={{ site, failed, reload }}>{children}</SiteContext.Provider>;
 }
 
 export const useSite = (): SiteState => useContext(SiteContext);

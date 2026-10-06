@@ -89,7 +89,9 @@ function ProtocolView({ p }: { p: Data }) {
               <div>
                 <dt>Победитель</dt>
                 <dd>
-                  <b>{winner.name}</b>
+                  <b>
+                    <Link to={`/players/${winner.id}`}>{winner.name}</Link>
+                  </b>
                 </dd>
               </div>
             )}
@@ -113,7 +115,7 @@ function ProtocolView({ p }: { p: Data }) {
           <section className="prog" aria-labelledby="prog-h">
             <h2 id="prog-h">Ход матча</h2>
             <p className="muted prog-note">
-              Первое число — {p.a.name}, второе — {p.b.name}
+              Первое число — <Link to={`/players/${p.a.id}`}>{p.a.name}</Link>, второе — <Link to={`/players/${p.b.id}`}>{p.b.name}</Link>
             </p>
             {p.progression.map((row) => (
               <div key={row.set} className="prog-row">

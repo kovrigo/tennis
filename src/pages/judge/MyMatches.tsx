@@ -24,9 +24,8 @@ function groups(page: JudgeMatchesPage): Group[] {
   const { today } = page;
   const tomorrow = addDays(today, 1);
   const byKey = new Map<string, Group>();
-  // By day and time, matches without time last in their day.
-  const sorted = [...page.matches].sort((x, y) => `${x.day} ${x.time ?? "~"}`.localeCompare(`${y.day} ${y.time ?? "~"}`));
-  for (const m of sorted) {
+  // The server sends them by day and time, matches without time last in their day.
+  for (const m of page.matches) {
     // A past-day match is listed only while unfinished, or when it was finished today.
     const past = m.day < today && m.state !== "finished";
     const key = past ? "past" : m.day < today ? today : m.day;

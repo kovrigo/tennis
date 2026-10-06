@@ -16,18 +16,37 @@ function subscribe(cb: () => void): () => void {
 const snapshot = () => window.location.pathname + window.location.search;
 
 let leaveGuard: (() => boolean) | null = null;
+/** The address on screen, to return to when Back is refused. */
+let shown = snapshot();
 
-/** A form with unsaved changes asks before an in-site link leaves it. Returns false to stay. */
+/** A form with unsaved changes asks before an in-site link or Back leaves it. Returns false to stay. */
 export function setLeaveGuard(guard: (() => boolean) | null): void {
   leaveGuard = guard;
 }
 
+/** Asks the open form, if any; true when the page may be left. */
+export function canLeave(): boolean {
+  if (leaveGuard && !leaveGuard()) return false;
+  leaveGuard = null;
+  return true;
+}
+
+// Registered before any page subscribes, so a refused Back never re-renders.
+window.addEventListener("popstate", (e) => {
+  if (!canLeave()) {
+    e.stopImmediatePropagation();
+    window.history.pushState(null, "", shown);
+    return;
+  }
+  shown = snapshot();
+});
+
 export function navigate(to: string, opts: { replace?: boolean } = {}): void {
   if (to === snapshot()) return;
-  if (leaveGuard && !leaveGuard()) return;
-  leaveGuard = null;
+  if (!canLeave()) return;
   if (opts.replace) window.history.replaceState(null, "", to);
   else window.history.pushState(null, "", to);
+  shown = snapshot();
   window.dispatchEvent(new Event(CHANGE));
   if (!opts.replace) window.scrollTo(0, 0);
 }

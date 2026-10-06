@@ -170,6 +170,14 @@ button:disabled {
 }
 .top a {
   color: #c8d6e8;
+  position: relative;
+}
+/* A 44 px tap area without making the thin bar taller. */
+.top a::after,
+.fadr a::after {
+  content: "";
+  position: absolute;
+  inset: -12px 0;
 }
 .top a:hover {
   color: #fff;
@@ -796,7 +804,7 @@ table.data tbody tr:hover {
   color: #c8d6e8;
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 44px;
 }
 .site-foot ul a:hover {
   color: #fff;
@@ -834,7 +842,7 @@ table.data tbody tr:hover {
 }
 .fadr div {
   display: grid;
-  grid-template-columns: 84px 1fr;
+  grid-template-columns: 84px minmax(0, 1fr);
   gap: 12px;
 }
 .fadr dt {
@@ -842,8 +850,10 @@ table.data tbody tr:hover {
 }
 .fadr dd {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 .fadr a {
+  position: relative;
   color: #fff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.35);
 }
@@ -862,7 +872,7 @@ table.data tbody tr:hover {
 }
 .fbot a {
   color: #fff;
-  min-height: 36px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
 }
@@ -945,6 +955,10 @@ table.data tbody tr:hover {
   }
   .match .mh .st {
     margin-left: auto;
+    /* "итог внесён вручную · <пометка>" must wrap, not push the page sideways. */
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: right;
   }
   .pl {
     padding: 12px 14px;

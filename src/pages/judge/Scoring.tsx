@@ -40,7 +40,6 @@ type Note = { tone: "plain" | "warn" | "error"; text: string } | null;
 
 const FORMAT =
   "Формат: до двух выигранных сетов, тай-брейк до 7 при 6:6 в каждом сете. Итог матча другого формата вносит организатор";
-const STALE = "Счёт изменился на другом телефоне. Действие не выполнено, показан текущий счёт";
 const LOST = "Последнее действие не сохранилось. Проверьте счёт";
 const REFRESHED = "Счёт обновлён с сайта";
 
@@ -145,7 +144,7 @@ function Board({ initial }: { initial: JudgeMatch }) {
         // stale, finished, nothing_to_undo, undo_closed, manual_result, not_your_match:
         // the board shows the stored score and the screen its state.
         show(match);
-        setNote(e.code === "stale" ? { tone: "warn", text: STALE } : null);
+        setNote(e.code === "stale" ? { tone: "warn", text: e.message } : null);
       } else {
         setNote({ tone: "error", text: e.message });
       }

@@ -25,6 +25,7 @@ function PlacementsPage({ p }: { p: PlacementsForm }) {
     Object.fromEntries(
       p.players.map((pl) => [String(pl.id), p.hasTable ? (pl.pointsRowId?.toString() ?? "") : pl.placeText]),
     ),
+    Object.fromEntries(p.players.map((pl) => [String(pl.id), [`player.${pl.id}`]])),
   );
   const back = `/admin/tournaments/${p.tournamentId}`;
 
@@ -76,15 +77,19 @@ function PlacementsPage({ p }: { p: PlacementsForm }) {
                   const key = String(pl.id);
                   const value = form.values[key] ?? "";
                   const row = p.hasTable ? p.rows.find((r) => String(r.id) === value) : undefined;
+                  const err = form.errors[`player.${pl.id}`];
+                  const errId = `place-${pl.id}-err`;
                   return (
                     <tr key={pl.id}>
                       <td>{pl.name}</td>
                       <td>{pl.city}</td>
-                      <td>
+                      <td className={err ? "field invalid" : undefined}>
                         {p.hasTable ? (
                           <select
                             className="input"
                             aria-label={`Место: ${pl.name}`}
+                            aria-invalid={err ? true : undefined}
+                            aria-describedby={err ? errId : undefined}
                             value={value}
                             onChange={(e) => form.set(key, e.target.value)}
                           >
@@ -100,9 +105,16 @@ function PlacementsPage({ p }: { p: PlacementsForm }) {
                             className="input"
                             type="text"
                             aria-label={`Место: ${pl.name}`}
+                            aria-invalid={err ? true : undefined}
+                            aria-describedby={err ? errId : undefined}
                             value={value}
                             onChange={(e) => form.set(key, e.target.value)}
                           />
+                        )}
+                        {err && (
+                          <div className="err" id={errId}>
+                            {err}
+                          </div>
                         )}
                       </td>
                       {p.hasTable && <td className="r num">{row ? points(row.points) : ""}</td>}

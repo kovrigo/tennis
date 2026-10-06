@@ -61,7 +61,7 @@ function MatchPage({ match, ctx }: { match: Match | null; ctx: MatchFormContext 
     a: NO_PLAYER,
     b: NO_PLAYER,
   };
-  const form = useForm<Values>(m ? toValues(m) : empty);
+  const form = useForm<Values>(m ? toValues(m) : empty, { a: ["playerA", "newA"], b: ["playerB", "newB"] });
   const created = useJustCreated(form.dirty);
   const requestId = useRequestId();
   const [dups, setDups] = useState<AdminPlayerRow[] | null>(null);

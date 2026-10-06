@@ -46,7 +46,11 @@ export function failureOf(e: unknown): { failure: Failure; errors: Record<string
   return { failure: { kind: "other", message: e.body?.message ?? "Не сохранено" }, errors: {} };
 }
 
-export function useForm<T>(initial: T): FormState<T> {
+/**
+ * `owns` maps a value to the error keys it clears when changed, e.g. { a: ["playerA", "newA"] }:
+ * "newA" also clears "newA.city". By default a value clears its own key and "key.*".
+ */
+export function useForm<T>(initial: T, owns: Partial<Record<keyof T, string[]>> = {}): FormState<T> {
   const [values, setValues] = useState<T>(initial);
   const [baseline, setBaseline] = useState<string>(() => JSON.stringify(initial));
   const [saving, setSaving] = useState(false);
@@ -54,6 +58,7 @@ export function useForm<T>(initial: T): FormState<T> {
   const [errors, setErrorsState] = useState<Record<string, string>>({});
   const [failure, setFailure] = useState<Failure | null>(null);
   const busy = useRef(false);
+  const ownsRef = useRef(owns);
   const dirty = JSON.stringify(values) !== baseline;
 
   useEffect(() => {
@@ -73,10 +78,10 @@ export function useForm<T>(initial: T): FormState<T> {
   const set = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
     setSaved(false);
+    const prefixes = ownsRef.current[key] ?? [key as string];
     setErrorsState((errs) => {
-      if (!(key as string in errs)) return errs;
-      const { [key as string]: _, ...rest } = errs;
-      return rest;
+      const rest = Object.fromEntries(Object.entries(errs).filter(([k]) => !prefixes.some((p) => k === p || k.startsWith(`${p}.`))));
+      return Object.keys(rest).length === Object.keys(errs).length ? errs : rest;
     });
   }, []);
 

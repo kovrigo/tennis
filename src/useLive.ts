@@ -6,7 +6,8 @@ import type { LivePage } from "./api-types.ts";
 //   GET /api/live every 10 s counted from the start of the previous request;
 //   a request without an answer for 8 s has failed;
 //   hidden tab: no requests; visible again: request at once;
-//   last good answer older than 30 s: "stale" (the "Нет связи" banner).
+//   no good answer for 30 s while the tab is visible: "stale" (the "Нет связи" banner);
+//   a request still in flight when the page closes neither updates nor polls again.
 
 const PERIOD = 10_000;
 const TIMEOUT = 8_000;
@@ -26,39 +27,47 @@ export function useLive(): LiveState {
   const [failed, setFailed] = useState(false);
   const [stale, setStale] = useState(false);
   const lastOk = useRef(0);
+  // A hidden tab asks nothing, so the 30 s count starts again when it is shown.
+  const visibleSince = useRef(Date.now());
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlight = useRef(false);
+  const alive = useRef(false);
 
   const poll = useCallback(async () => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
-    if (document.hidden || inFlight.current) return;
+    if (!alive.current || document.hidden || inFlight.current) return;
     const started = Date.now();
     inFlight.current = true;
     try {
       const page = await api<LivePage>("/api/live", { timeoutMs: TIMEOUT });
+      if (!alive.current) return;
       lastOk.current = Date.now();
       setData(page);
       setFailed(false);
       setStale(false);
     } catch {
-      if (!lastOk.current) setFailed(true);
+      if (alive.current && !lastOk.current) setFailed(true);
     } finally {
       inFlight.current = false;
     }
-    if (!document.hidden) timer.current = setTimeout(poll, Math.max(0, PERIOD - (Date.now() - started)));
+    if (alive.current && !document.hidden) timer.current = setTimeout(poll, Math.max(0, PERIOD - (Date.now() - started)));
   }, []);
 
   useEffect(() => {
+    alive.current = true;
     void poll();
     const onVisible = () => {
-      if (!document.hidden) void poll();
+      if (document.hidden) return;
+      visibleSince.current = Date.now();
+      void poll();
     };
     document.addEventListener("visibilitychange", onVisible);
     const check = setInterval(() => {
-      if (lastOk.current && !document.hidden) setStale(Date.now() - lastOk.current > STALE);
+      if (lastOk.current && !document.hidden) setStale(Date.now() - Math.max(lastOk.current, visibleSince.current) > STALE);
     }, 1000);
     return () => {
+      alive.current = false;
       document.removeEventListener("visibilitychange", onVisible);
       clearInterval(check);
       if (timer.current) clearTimeout(timer.current);

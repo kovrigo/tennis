@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { api } from "../api.ts";
-import { Link, navigate, useLocation } from "../router.tsx";
+import { Link, canLeave, navigate, useLocation } from "../router.tsx";
 import { useSite } from "../site.tsx";
 import { Icon, Shield } from "./icons.tsx";
 
@@ -168,6 +168,8 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 }
 
 export async function logout(reload: () => void): Promise<void> {
+  // An open form asks first; "stay" keeps the sign-in too.
+  if (!canLeave()) return;
   try {
     await api("/api/logout", { method: "POST", body: {} });
   } catch {

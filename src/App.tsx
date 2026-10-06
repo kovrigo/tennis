@@ -1,6 +1,6 @@
 import { type ComponentType, type ReactNode, useEffect } from "react";
 import type { Role } from "./api-types.ts";
-import { ErrorBoundary, Loading, NotFound } from "./components/states.tsx";
+import { ErrorBoundary, LoadError, Loading, NotFound } from "./components/states.tsx";
 import { AdminLayout, BareLayout, PublicLayout } from "./layout/Layout.tsx";
 import { IconSprite } from "./layout/icons.tsx";
 import { AdminContacts } from "./pages/admin/Contacts.tsx";
@@ -87,10 +87,10 @@ function Redirect({ to }: { to: string }) {
 
 /** Staff pages: without the right sign-in, go to the login page and come back after. */
 function Gate({ role, children }: { role?: Role; children: ReactNode }) {
-  const { site } = useSite();
+  const { site, failed, reload } = useSite();
   const { path } = useLocation();
   if (!role) return <>{children}</>;
-  if (!site) return <Loading show={false} />;
+  if (!site) return failed ? <LoadError onRetry={() => void reload()} /> : <Loading show={false} />;
   if (site.user?.role !== role) return <Redirect to={`/login?next=${encodeURIComponent(path)}`} />;
   return <>{children}</>;
 }

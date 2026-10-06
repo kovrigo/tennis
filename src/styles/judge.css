@@ -104,7 +104,8 @@
 }
 .j-row-st {
   margin-left: auto;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  text-align: right;
   color: var(--ink-2);
 }
 .j-row-t {
