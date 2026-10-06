@@ -7,17 +7,18 @@ import type { SiteInfo } from "./api-types.ts";
 
 interface SiteState {
   site: SiteInfo | null;
-  reload: () => void;
+  /** Resolves when the new info is in place (or the request failed). */
+  reload: () => Promise<void>;
 }
 
-const SiteContext = createContext<SiteState>({ site: null, reload: () => {} });
+const SiteContext = createContext<SiteState>({ site: null, reload: async () => {} });
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [site, setSite] = useState<SiteInfo | null>(null);
-  const reload = useCallback(() => {
-    api<SiteInfo>("/api/site").then(setSite, () => {});
-  }, []);
-  useEffect(reload, [reload]);
+  const reload = useCallback(() => api<SiteInfo>("/api/site").then(setSite, () => {}), []);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
   return <SiteContext.Provider value={{ site, reload }}>{children}</SiteContext.Provider>;
 }
 
