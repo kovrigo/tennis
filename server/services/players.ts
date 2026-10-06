@@ -1,7 +1,7 @@
 import type { AdminPlayerRow, NewPlayer } from "../../src/api-types.ts";
 import { type Db, all, get, run, tx } from "../db.ts";
 import { ApiError, fail } from "../http.ts";
-import { type Fields, check, collator, createOnce, fullName, normalize, notFoundUnless, obj, str } from "./common.ts";
+import { type Fields, check, collator, createOnce, createdBefore, fullName, normalize, notFoundUnless, obj, str } from "./common.ts";
 
 // Players: one shared list for every tournament. Namesakes are allowed after a warning.
 
@@ -72,11 +72,8 @@ export function savePlayer(db: Db, body: unknown, id?: number): AdminPlayerRow {
   return tx(db, () => {
     if (id !== undefined) notFoundUnless(get(db, "SELECT 1 FROM players WHERE id = ?", id));
     // A repeated create returns the first record before the namesake check finds it.
-    const repeated =
-      id === undefined && typeof b.requestId === "string"
-        ? get<{ entity_id: number }>(db, "SELECT entity_id FROM create_requests WHERE request_id = ? AND entity = 'player'", b.requestId)
-        : undefined;
-    if (repeated) return playerRow(db, repeated.entity_id);
+    const repeated = id === undefined ? createdBefore(db, b.requestId, "player") : undefined;
+    if (repeated) return playerRow(db, repeated);
     if (b.confirmDuplicate !== true) {
       const dups = findDuplicates(db, p, id);
       if (dups.length) {

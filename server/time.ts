@@ -14,8 +14,6 @@ const timeFormat = new Intl.DateTimeFormat("ru", {
   hourCycle: "h23",
 });
 
-export const nowIso = (): string => new Date().toISOString();
-
 /** Moscow calendar day of a moment. */
 export function moscowDay(at: Date | string = new Date()): string {
   return dayFormat.format(typeof at === "string" ? new Date(at) : at);
@@ -47,7 +45,14 @@ export function durationText(from: string, to: string): string {
   return h ? `${h} ч ${min % 60} мин` : `${min} мин`;
 }
 
-export const isDay = (s: unknown): s is string =>
-  typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && addDays(s, 0) === s;
+/** Moscow midnight of a day as a UTC ISO string. Moscow has been UTC+3 all year since 2014. */
+export const moscowDayStart = (day: string): string => new Date(`${day}T00:00:00+03:00`).toISOString();
+
+/** A real calendar day "YYYY-MM-DD": "2026-02-30" and "2026-13-01" are not. */
+export function isDay(s: unknown): s is string {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = new Date(`${s}T12:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+}
 
 export const isTime = (s: unknown): s is string => typeof s === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(s);

@@ -1,5 +1,6 @@
 import { createReadStream } from "node:fs";
 import { join } from "node:path";
+import { pipeline } from "node:stream/promises";
 import type { SiteInfo } from "../../src/api-types.ts";
 import type { Route } from "../app.ts";
 import { get } from "../db.ts";
@@ -47,8 +48,9 @@ export const publicRoutes: Route[] = [
         "content-disposition": `attachment; filename="regulation.${f.type}"; filename*=UTF-8''${encodeURIComponent(f.name)}`,
         "cache-control": "no-cache",
       });
-      return new Promise<void>((resolve, reject) => {
-        createReadStream(join(deps.filesDir, id)).on("error", reject).on("end", resolve).pipe(res);
+      // pipeline closes the file when the visitor drops the download.
+      return pipeline(createReadStream(join(deps.filesDir, id)), res).catch((e: NodeJS.ErrnoException) => {
+        if (e.code !== "ERR_STREAM_PREMATURE_CLOSE") throw e;
       });
     },
   ],

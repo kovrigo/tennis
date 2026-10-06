@@ -5,10 +5,10 @@ import { ApiError } from "./http.ts";
 import { applyAction, clearManualResult, saveMatch, setManualResult } from "./services/matches.ts";
 import { pointsFor } from "./seeds/points.ts";
 import { type TestApp, action, addJudge, addMatchSetup, addOrganizer, memoryDb, startApp } from "./testkit.ts";
-import { judgeMatch } from "./views/judge.ts";
+import { judgeMatch, judgeMatchesPage } from "./views/judge.ts";
 import { protocol } from "./views/public.ts";
 
-// Judge actions: S6.5, S9.8–S9.13, S10.2–S10.3.
+// Judge actions: S6.5, S9.1, S9.7, S9.8, S9.10–S9.13, S10.2–S10.3.
 
 const at = (iso: string) => new Date(iso);
 const MSK_LATE = "2026-10-06T20:50:00Z"; // 23:50 Moscow
@@ -160,23 +160,67 @@ describe("organizer changes", () => {
     expect(m.game).toEqual({ a: "40", b: "0" });
   });
 
-  test("manual result: winner required, sets must agree with the winner", () => {
+  test("manual result: winner required, sets must agree with the winner; a match stopped early may end on an unfinished set", () => {
     const { db, matchId } = setup();
+    const sets = (winner: "a" | "b", s: [number, number][]) => refusal(() => setManualResult(db, matchId, { winner, sets: s, note: "" })).extra.fields;
     expect(refusal(() => setManualResult(db, matchId, { sets: [], note: "" })).extra.fields).toHaveProperty("winner");
-    expect(refusal(() => setManualResult(db, matchId, { winner: "a", sets: [[3, 6], [2, 6]], note: "" })).extra.fields).toHaveProperty("sets");
-    expect(refusal(() => setManualResult(db, matchId, { winner: "a", sets: [[6, 6]], note: "" })).extra.fields).toHaveProperty("sets");
+    expect(sets("a", [[3, 6], [2, 6]])).toEqual({ sets: "По этому счёту победил другой игрок" });
+    expect(sets("a", [[6, 4], [4, 6]])).toEqual({ sets: "По этому счёту победил другой игрок" });
+    expect(sets("b", [[6, 4], [3, 3]])).toEqual({ sets: "По этому счёту победил другой игрок" });
+    expect(sets("a", [[3, 3], [6, 4]])).toEqual({ sets: "Незаконченным может быть только последний сет" });
+    // Retired: the winner leads, is level in sets, or the first set was not finished.
+    for (const s of [[[6, 4], [3, 3]], [[6, 4], [3, 6], [1, 2]], [[6, 6]], [[4, 6], [6, 3], [10, 8]]] as [number, number][][]) {
+      expect(setManualResult(db, matchId, { winner: "a", sets: s, note: "отказ" }).manual?.sets).toEqual(s);
+    }
   });
 });
 
 describe("protocol times", () => {
   test("start and end are the first and last counted points; undone points do not count", () => {
     const { db, judge, matchId } = setup();
+    applyAction(db, matchId, judge, action("point", 0, "b"), at("2026-10-06T06:50:00Z"));
+    applyAction(db, matchId, judge, action("undo", 1), at("2026-10-06T06:51:00Z"));
     const pts = pointsFor("6:0, 6:0");
-    play(db, matchId, judge, pts, "2026-10-06T07:00:00Z");
+    play(db, matchId, judge, pts, "2026-10-06T07:00:00Z", 2);
     const p = protocol(db, matchId);
     expect(p.startedTime).toBe("10:00");
     expect(p.finishedTime).toBe("10:01");
     expect(p.durationText).toBe("1 мин");
+  });
+});
+
+describe("undo to the start", () => {
+  test("undoing every point returns the match to not started; scoring goes on", () => {
+    const { db, judge, matchId } = setup();
+    play(db, matchId, judge, ["a", "b"], "2026-10-06T07:00:00Z");
+    applyAction(db, matchId, judge, action("undo", 2), at("2026-10-06T07:01:00Z"));
+    applyAction(db, matchId, judge, action("undo", 3), at("2026-10-06T07:01:05Z"));
+    expect(get(db, "SELECT state, started_at, finished_at FROM matches WHERE id = ?", matchId)).toEqual({ state: "not_started", started_at: null, finished_at: null });
+    expect(refusal(() => applyAction(db, matchId, judge, action("undo", 4))).code).toBe("nothing_to_undo");
+    const m = applyAction(db, matchId, judge, action("point", 4, "b"), at("2026-10-06T07:02:00Z"));
+    expect([m.seq, m.points, m.game]).toEqual([5, 1, { a: "0", b: "15" }]);
+  });
+});
+
+describe("judge's list", () => {
+  test("own matches only: today, later days and the ones still running from past days", () => {
+    const { db, judge, other, divisionId, a, b, matchId } = setup();
+    const more = (day: string, judgeId: number, time = "12:00") =>
+      saveMatch(db, { divisionId, round: "1-й круг", day, time, court: "Корт 2", playerA: a, playerB: b, judgeId }).id;
+    const pastDone = more("2026-10-05", judge);
+    play(db, pastDone, judge, pointsFor("6:0, 6:0"), "2026-10-05T07:00:00Z");
+    const pastRunning = more("2026-10-05", judge);
+    applyAction(db, pastRunning, judge, action("point", 0, "a"), at("2026-10-05T09:00:00Z"));
+    // Finished after Moscow midnight: the judge may still undo today, so it stays listed.
+    const pastLate = more("2026-10-05", judge, "20:00");
+    play(db, pastLate, judge, pointsFor("6:0, 6:0"), "2026-10-05T20:59:30Z");
+    more("2026-10-05", judge); // not started, day passed
+    const tomorrow = more("2026-10-07", judge);
+    more("2026-10-06", other);
+    const page = judgeMatchesPage(db, judge, at("2026-10-06T09:00:00Z"));
+    expect(page.matches.map((m) => m.id)).toEqual([pastRunning, pastLate, matchId, tomorrow]);
+    expect(judgeMatch(db, pastLate, judge, at("2026-10-06T09:00:00Z")).undoOpen).toBe(true);
+    expect(judgeMatchesPage(db, other, at("2026-10-06T09:00:00Z")).matches).toHaveLength(1);
   });
 });
 

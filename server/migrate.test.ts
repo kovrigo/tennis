@@ -1,10 +1,11 @@
-import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { all, get, openDb, run } from "./db.ts";
 import { StartupError, migrate, migrationStatus } from "./migrate.ts";
 import { type Seed, runSeeds, seedStatus } from "./seed.ts";
-import { MIGRATIONS, addMatchSetup, tmpDir } from "./testkit.ts";
+import { saveRegulation, saveTournament } from "./services/tournaments.ts";
+import { MIGRATIONS, PDF, addMatchSetup, tmpDir } from "./testkit.ts";
 
 // Database updates and run-once seeds on real files.
 
@@ -50,6 +51,21 @@ describe("migrations", () => {
     const copies = readdirSync(w.backups);
     expect(copies.some((f) => /^before-002_news_author-.+\.sqlite$/.test(f))).toBe(true);
     expect(copies.some((f) => f.endsWith(".tmp"))).toBe(false);
+  });
+
+  test("the copy keeps a fresh temp file of another starting process and removes an old one", () => {
+    const w = workspace();
+    const db = openDb(w.dbPath);
+    migrate(db, w.migrations, w.backups);
+    writeFileSync(join(w.backups, "fresh.sqlite.tmp"), "");
+    writeFileSync(join(w.backups, "old.sqlite.tmp"), "");
+    const hourAgo = new Date(Date.now() - 3600_000);
+    utimesSync(join(w.backups, "old.sqlite.tmp"), hourAgo, hourAgo);
+    writeFileSync(join(w.migrations, "002_x.sql"), "CREATE TABLE x (id INTEGER PRIMARY KEY);");
+    migrate(db, w.migrations, w.backups);
+    const left = readdirSync(w.backups);
+    expect(left).toContain("fresh.sqlite.tmp");
+    expect(left).not.toContain("old.sqlite.tmp");
   });
 
   test("a changed applied file is reported as drift; new files still apply", () => {
@@ -108,19 +124,24 @@ describe("seeds", () => {
     expect(get(db, "SELECT COUNT(*) AS n FROM news")).toEqual({ n: 0 });
   });
 
-  test("a failing seed rolls back and is reported with its name", () => {
+  test("a failing seed rolls back, leaves no files and is reported with its name", () => {
     const w = workspace();
+    const files = tmpDir("files");
     const db = openDb(w.dbPath);
     migrate(db, w.migrations, w.backups);
     const broken: Seed = {
       name: "002_broken",
-      run: (d) => {
+      run: (d, ctx) => {
         run(d, "INSERT INTO news (title, date, body, created_at) VALUES ('x', '2026-10-06', 'y', 'z')");
+        const t = saveTournament(d, { name: "Образец", startDate: "2026-10-06", endDate: "2026-10-06", city: "Тосно", venue: "", kind: "amateur", category: "" });
+        saveRegulation(d, ctx.filesDir, t, "Положение.pdf", PDF);
         throw new Error("boom");
       },
     };
-    expect(() => runSeeds(db, [sample, broken], { now: new Date(), filesDir: w.dir })).toThrow(/^002_broken: boom$/);
+    expect(() => runSeeds(db, [sample, broken], { now: new Date(), filesDir: files })).toThrow(/^002_broken: boom$/);
     expect(get(db, "SELECT COUNT(*) AS n FROM news")).toEqual({ n: 1 });
+    expect(get(db, "SELECT COUNT(*) AS n FROM files")).toEqual({ n: 0 });
+    expect(readdirSync(files)).toEqual([]);
     expect(seedStatus(db, [sample, broken])).toEqual({ latest: "002_broken", pending: 1 });
   });
 });

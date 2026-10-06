@@ -3,10 +3,11 @@ import type { Db } from "./db.ts";
 import { ApiError } from "./http.ts";
 import { saveDivision, saveGroup, savePlacements } from "./services/divisions.ts";
 import { deleteMatch, saveMatch } from "./services/matches.ts";
+import { saveNews } from "./services/people.ts";
 import { createPlayer } from "./services/players.ts";
 import { saveRegulation, saveTournament } from "./services/tournaments.ts";
 import { PDF, memoryDb, tmpDir } from "./testkit.ts";
-import { playerPage, ratingPage, tournamentPage } from "./views/public.ts";
+import { homePage, playerPage, ratingPage, tournamentPage } from "./views/public.ts";
 
 // Rating and points: S4.1–S4.3, S4.5, S7.5–S7.9.
 
@@ -78,6 +79,34 @@ describe("group rating", () => {
       { playerId: ids[3], pointsRowId: rowId(d, "B") },
     ]);
     expect(ratingPage(db, String(g)).rows.map((x) => x.place)).toEqual([1, 1, 1, 4]);
+  });
+
+  test("equal sums in Russian dictionary order: Ё counts as Е, not before А", () => {
+    const db = memoryDb();
+    const g = saveGroup(db, { name: "Мужчины" }).id;
+    const ids = players(db, ["Жуков Ян", "Ёлкин Ян", "Еремин Ян", "Абрамов Ян"]);
+    const t = tournament(db, "Турнир", "2026-05-01");
+    const d = division(db, t, "2026-05-01", g, [["A", 10]], ids);
+    savePlacements(db, d.id, ids.map((playerId) => ({ playerId, pointsRowId: d.rows[0].id })));
+    expect(ratingPage(db, String(g)).rows.map((r) => [r.place, r.player.name])).toEqual([
+      [1, "Абрамов Ян"],
+      [1, "Ёлкин Ян"],
+      [1, "Еремин Ян"],
+      [1, "Жуков Ян"],
+    ]);
+  });
+
+  test("home page: the first five of each group and the three latest news", () => {
+    const db = memoryDb();
+    const g = saveGroup(db, { name: "Мужчины" }).id;
+    const ids = players(db, ["Вега Ян", "Гусев Лев", "Дьяков Ян", "Жаров Ян", "Зуев Ян", "Ильин Ян"]);
+    const t = tournament(db, "Турнир", "2026-05-01");
+    const d = division(db, t, "2026-05-01", g, [["A", 10]], ids);
+    savePlacements(db, d.id, ids.map((playerId) => ({ playerId, pointsRowId: d.rows[0].id })));
+    for (const day of ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04"]) saveNews(db, { title: day, date: day, body: "Текст" });
+    const home = homePage(db, "2026-10-06");
+    expect(home.rating.map((r) => r.rows.length)).toEqual([5]);
+    expect(home.news.map((n) => n.title)).toEqual(["2026-09-04", "2026-09-03", "2026-09-02"]);
   });
 
   test("unknown or missing group opens the first group", () => {

@@ -2,7 +2,7 @@ import type { AdminJudgeRow, AdminNewsRow, Contacts, NewsItem } from "../../src/
 import { type Db, all, get, run, tx } from "../db.ts";
 import { ApiError, fail } from "../http.ts";
 import { isDay, moscowDay } from "../time.ts";
-import { type Fields, check, collator, createOnce, notFoundUnless, obj, required, str, text } from "./common.ts";
+import { type Fields, check, collator, createOnce, createdBefore, notFoundUnless, obj, required, str, text } from "./common.ts";
 
 // Judges' accounts, news and footer contacts.
 
@@ -47,11 +47,8 @@ export function saveJudge(db: Db, body: unknown, passwordHash: string | null, id
   return tx(db, () => {
     const taken = get<{ id: number }>(db, "SELECT id FROM users WHERE login = ?", login);
     if (id === undefined) {
-      const repeated =
-        typeof b.requestId === "string"
-          ? get<{ entity_id: number }>(db, "SELECT entity_id FROM create_requests WHERE request_id = ? AND entity = 'judge'", b.requestId)
-          : undefined;
-      if (repeated) return judgeRow(db, repeated.entity_id);
+      const repeated = createdBefore(db, b.requestId, "judge");
+      if (repeated) return judgeRow(db, repeated);
       if (taken) throw loginTaken();
       const newId = createOnce(db, b.requestId, "judge", () =>
         run(

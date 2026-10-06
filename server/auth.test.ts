@@ -15,6 +15,7 @@ beforeAll(async () => {
   addOrganizer(db);
   addJudge(db);
   addJudge(db, "judge9", "tennis-judge9", "Петров");
+  addJudge(db, "judge7", "tennis-judge7", "Сидоров");
   app = await startApp(db);
   organizer = await app.login("organizer", "tennis-org");
   judge = await app.login("judge1", "tennis-judge1");
@@ -63,9 +64,10 @@ describe("sign-in", () => {
   });
 
   test("five wrong passwords close the login for 15 minutes, existing or not", async () => {
-    for (const login of ["judge9", "nobody"]) {
+    // Own logins: a closed login must not leak into other tests of this app.
+    for (const login of ["judge7", "nobody"]) {
       for (let i = 0; i < 5; i++) expect((await app.call("POST", "/api/login", { body: { login, password: "wrong-pass" } })).status).toBe(401);
-      const r = await app.call("POST", "/api/login", { body: { login, password: "tennis-judge9" } });
+      const r = await app.call("POST", "/api/login", { body: { login, password: "tennis-judge7" } });
       expect(r.status).toBe(429);
       expect(await r.json()).toMatchObject({ error: "too_many_attempts", minutes: 15, message: "Слишком много попыток. Попробуйте через 15 мин." });
     }
@@ -93,6 +95,14 @@ describe("sign-in", () => {
     l.failure("a");
     expect(l.lockedMinutes("a")).toBe(15);
     expect(l.lockedMinutes("a", Date.now() + 15 * 60000 + 1)).toBe(0);
+  });
+
+  test("failures older than 15 minutes are forgotten", () => {
+    const l = new LoginLimiter();
+    const t0 = Date.now();
+    for (let i = 0; i < 4; i++) l.failure("a", t0);
+    l.failure("a", t0 + 15 * 60000);
+    expect(l.lockedMinutes("a", t0 + 15 * 60000)).toBe(0);
   });
 
   test("writes accept JSON only", async () => {

@@ -2,7 +2,7 @@ import type { JudgeMatch, JudgeMatchesPage } from "../../src/api-types.ts";
 import { type Db, get } from "../db.ts";
 import { countedPoints, replay, setsText } from "../score.ts";
 import { matchNames, notFoundUnless, shortName } from "../services/common.ts";
-import { moscowDay } from "../time.ts";
+import { moscowDay, moscowDayStart } from "../time.ts";
 import { actionsFor, byTime, loadMatches, matchRows } from "./matchRows.ts";
 
 /** The scoring screen's match, as stored; also the answer to every action. */
@@ -40,11 +40,17 @@ export function judgeMatch(db: Db, matchId: number, judgeId: number, now = new D
   };
 }
 
-/** Own matches: still running from past days, today and later. */
+/** Own matches: today and later, still running from past days, finished today by the judge (undo is open till midnight). */
 export function judgeMatchesPage(db: Db, judgeId: number, now = new Date()): JudgeMatchesPage {
   const today = moscowDay(now);
   const judge = notFoundUnless(get<{ first_name: string; last_name: string }>(db, "SELECT first_name, last_name FROM users WHERE id = ?", judgeId));
-  const matches = matchRows(db, "m.judge_id = ? AND (m.day >= ? OR m.state = 'running')", judgeId, today).sort(
+  const matches = matchRows(
+    db,
+    "m.judge_id = ? AND (m.day >= ? OR m.state = 'running' OR (m.state = 'finished' AND m.manual_winner IS NULL AND m.finished_at >= ?))",
+    judgeId,
+    today,
+    moscowDayStart(today),
+  ).sort(
     (a, b) => a.day.localeCompare(b.day) || byTime(a, b),
   );
   return { judgeName: shortName(judge), today, matches };

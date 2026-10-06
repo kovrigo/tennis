@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, normalize } from "node:path";
+import { pipeline } from "node:stream";
 
 // Production pages from dist/. A missing /assets/ file is 404: a tab from an older
 // release must not get index.html as its JavaScript. Any other path gets index.html.
@@ -28,5 +29,8 @@ export function serveStatic(dist: string, req: IncomingMessage, res: ServerRespo
   if (missing) file = join(dist, "index.html");
   const cache = path.startsWith("/assets/") ? "public, max-age=31536000, immutable" : "no-cache";
   res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream", "cache-control": cache });
-  createReadStream(file).pipe(res);
+  // pipeline closes the file when the browser drops the connection.
+  pipeline(createReadStream(file), res, (e) => {
+    if (e && (e as NodeJS.ErrnoException).code !== "ERR_STREAM_PREMATURE_CLOSE") console.error(`static ${path}:`, e);
+  });
 }

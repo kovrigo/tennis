@@ -115,10 +115,11 @@ export function readCookie(header: string | undefined, name: string): string | u
 
 /**
  * Five wrong passwords in a row close a login for 15 minutes, existing or not.
+ * Failures older than 15 minutes are forgotten, so the map holds only recent logins.
  * Kept in memory: a restart clears it.
  */
 export class LoginLimiter {
-  private fails = new Map<string, { count: number; lockedUntil: number }>();
+  private fails = new Map<string, { count: number; last: number; lockedUntil: number }>();
 
   /** Minutes left when the login is closed, else 0. */
   lockedMinutes(login: string, now = Date.now()): number {
@@ -128,9 +129,11 @@ export class LoginLimiter {
   }
 
   failure(login: string, now = Date.now()): void {
-    for (const [k, v] of this.fails) if (v.lockedUntil && v.lockedUntil <= now) this.fails.delete(k);
-    const f = this.fails.get(login) ?? { count: 0, lockedUntil: 0 };
+    const window = LOCK_MINUTES * 60000;
+    for (const [k, v] of this.fails) if (v.lockedUntil <= now && v.last + window <= now) this.fails.delete(k);
+    const f = this.fails.get(login) ?? { count: 0, last: 0, lockedUntil: 0 };
     f.count++;
+    f.last = now;
     if (f.count >= MAX_FAILS) {
       f.lockedUntil = now + LOCK_MINUTES * 60000;
       f.count = 0;

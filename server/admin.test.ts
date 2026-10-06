@@ -1,15 +1,15 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { get } from "./db.ts";
+import { get, run } from "./db.ts";
 import { ApiError } from "./http.ts";
 import { applyAction, deleteMatch, saveMatch } from "./services/matches.ts";
-import { contacts, deleteNews, newsRows, saveContacts, saveJudge, saveNews } from "./services/people.ts";
+import { contacts, deleteNews, judgePassword, newsRows, saveContacts, saveJudge, saveNews } from "./services/people.ts";
 import { createPlayer, deletePlayer, savePlayer } from "./services/players.ts";
 import { deleteTournament, saveTournament } from "./services/tournaments.ts";
 import { type TestApp, PDF, action, addJudge, addMatchSetup, addOrganizer, memoryDb, startApp, tmpDir } from "./testkit.ts";
 import { newsPage } from "./views/public.ts";
 
-// Organizer screens: S7.1–S7.10, S8.1–S8.3, S9.1.
+// Organizer screens: S3.2, S6.2–S6.4, S6.7, S7.3, S8.1, the organizer flow S6.1 over HTTP.
 
 const files = tmpDir("admin");
 
@@ -82,12 +82,35 @@ describe("players", () => {
   });
 });
 
+describe("matches and tournament dates", () => {
+  test("a match needs a round, a day inside the tournament and two different players", () => {
+    const db = memoryDb();
+    const s = addMatchSetup(db, { start: "2026-10-01", end: "2026-10-03", day: "2026-10-01" });
+    const m = { divisionId: s.divisionId, round: "Финал", day: "2026-10-02", time: null, court: "", playerA: s.a, playerB: s.b, judgeId: null };
+    expect(refused(() => saveMatch(db, { ...m, day: "2026-09-30" })).extra?.fields).toEqual({ day: "День должен быть в датах турнира" });
+    expect(refused(() => saveMatch(db, { ...m, day: "2026-10-04" })).extra?.fields).toEqual({ day: "День должен быть в датах турнира" });
+    expect(refused(() => saveMatch(db, { ...m, playerB: s.a })).extra?.fields).toEqual({ playerB: "Выберите двух разных игроков" });
+    expect(refused(() => saveMatch(db, { ...m, round: " " })).extra?.fields).toEqual({ round: "Укажите круг" });
+    expect(count(db, "matches")).toBe(1);
+  });
+
+  test("new tournament dates must still cover its matches", () => {
+    const db = memoryDb();
+    const s = addMatchSetup(db, { start: "2026-10-01", end: "2026-10-03", day: "2026-10-02" });
+    const t = { name: "Турнир", startDate: "2026-10-01", endDate: "2026-10-01", city: "Тосно", venue: "", kind: "amateur", category: "" };
+    expect(refused(() => saveTournament(db, t, s.tournamentId)).extra?.fields).toEqual({ endDate: "Есть матчи вне этих дат. Сначала перенесите их" });
+    saveTournament(db, { ...t, endDate: "2026-10-02" }, s.tournamentId);
+  });
+});
+
 describe("delete rules", () => {
   test("a tournament or player with matches stays; a match with points stays; the rest go", () => {
     const db = memoryDb();
     const judge = addJudge(db);
     const s = addMatchSetup(db, { start: "2026-10-01", end: "2026-10-03", day: "2026-10-01", judgeId: judge, filesDir: files, table: [["Победитель", 10]] });
     expect(refused(() => deleteTournament(db, files, s.tournamentId)).message).toBe("Турнир с матчами удалить нельзя");
+    // The schema refuses too: a slip past the check cannot wipe matches.
+    expect(() => run(db, "DELETE FROM tournaments WHERE id = ?", s.tournamentId)).toThrow(/FOREIGN KEY/);
     expect(refused(() => deletePlayer(db, s.a)).message).toBe("Игрока с матчами удалить нельзя");
     applyAction(db, s.matchId, judge, action("point", 0, "a"), new Date("2026-10-01T08:00:00Z"));
     const e = refused(() => deleteMatch(db, s.matchId));
@@ -109,12 +132,17 @@ describe("delete rules", () => {
 });
 
 describe("judges, news, contacts", () => {
-  test("a login is unique, case-insensitive; a short password is refused", () => {
+  test("a login is unique, case-insensitive; a password is required for a new judge and has 8 characters or more", () => {
     const db = memoryDb();
     addJudge(db, "judge1");
     const e = refused(() => saveJudge(db, { firstName: "Олег", lastName: "Кузнецов", login: "Judge1" }, "hash"));
     expect([e.status, e.code, e.extra?.fields]).toEqual([409, "login_taken", { login: "Такой логин уже есть" }]);
     expect(refused(() => saveJudge(db, { firstName: "Олег", lastName: "Кузнецов", login: "ab" }, "hash")).extra?.fields).toHaveProperty("login");
+    expect(refused(() => judgePassword({ password: "" }, true)).extra?.fields).toEqual({ password: "Укажите пароль" });
+    expect(refused(() => judgePassword({ password: "1234567" }, true)).extra?.fields).toEqual({ password: "Пароль — не короче 8 знаков" });
+    expect(refused(() => judgePassword({ password: "1234567" }, false)).extra?.fields).toEqual({ password: "Пароль — не короче 8 знаков" });
+    expect(judgePassword({ password: "" }, false)).toBeNull();
+    expect(judgePassword({ password: "12345678" }, true)).toBe("12345678");
   });
 
   test("news by date, newest first; same date, later first; empty date is today", () => {

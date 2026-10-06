@@ -1,3 +1,5 @@
+import { readdirSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { type Db, all, get, run, tx } from "./db.ts";
 import { StartupError } from "./migrate.ts";
 
@@ -33,6 +35,7 @@ export function seedStatus(db: Db, seeds: Seed[]): SeedStatus {
 export function runSeeds(db: Db, seeds: Seed[], ctx: SeedContext): SeedStatus {
   ensureTable(db);
   for (const seed of seeds) {
+    const filesBefore = new Set(readdirSync(ctx.filesDir));
     try {
       const applied = tx(db, () => {
         if (get(db, "SELECT 1 FROM seed_runs WHERE name = ?", seed.name)) return false;
@@ -42,6 +45,8 @@ export function runSeeds(db: Db, seeds: Seed[], ctx: SeedContext): SeedStatus {
       });
       if (applied) console.log(`seed applied: ${seed.name}`);
     } catch (e) {
+      // The rollback dropped the seed's file rows; its files go too. Startup runs before any upload.
+      for (const f of readdirSync(ctx.filesDir)) if (!filesBefore.has(f)) rmSync(join(ctx.filesDir, f), { force: true });
       const fields = (e as { extra?: { fields?: unknown } }).extra?.fields;
       throw new StartupError("seed", `${seed.name}: ${(e as Error).message}${fields ? ` ${JSON.stringify(fields)}` : ""}`);
     }

@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { createServer, request } from "node:http";
 import type { AddressInfo } from "node:net";
 import { join } from "node:path";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { serveStatic } from "./static.ts";
 import { type TestApp, memoryDb, okStatus, startApp, tmpDir } from "./testkit.ts";
 
@@ -33,6 +33,18 @@ describe("api", () => {
       expect(r.headers.get("x-content-type-options")).toBe("nosniff");
       expect(r.headers.get("x-frame-options")).toBe("DENY");
     }
+  });
+
+  test("an unexpected failure is 500 with a plain message, no internals", async () => {
+    const db = memoryDb();
+    const broken = await startApp(db);
+    db.close();
+    const quiet = vi.spyOn(console, "error").mockImplementation(() => {});
+    const r = await broken.call("GET", "/api/home");
+    quiet.mockRestore();
+    expect(r.status).toBe(500);
+    expect(await r.json()).toEqual({ error: "server", message: "Ошибка на сайте. Попробуйте ещё раз." });
+    await broken.close();
   });
 
   test("unknown path is 404 not_found", async () => {

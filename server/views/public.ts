@@ -18,7 +18,7 @@ import { collator, fullName, notFoundUnless } from "../services/common.ts";
 import { protocolJudges } from "../services/matches.ts";
 import { groupRows } from "../services/divisions.ts";
 import { fileInfo } from "../services/tournaments.ts";
-import { daysBetween, durationText, moscowDay, moscowTime } from "../time.ts";
+import { daysBetween, durationText, moscowDay, moscowDayStart, moscowTime } from "../time.ts";
 import { actionsFor, byCourt, byTime, loadMatches, manualSets, matchRows } from "./matchRows.ts";
 import { groupRating } from "./rating.ts";
 
@@ -122,9 +122,6 @@ export function tournamentPage(db: Db, id: number, today = moscowDay()): Tournam
   });
   return { tournament, today, days: daysBetween(tournament.startDate, tournament.endDate), matches, results };
 }
-
-/** Moscow midnight of a day as a UTC ISO string. Moscow has been UTC+3 all year since 2014. */
-const moscowDayStart = (day: string) => new Date(Date.parse(`${day}T00:00:00+03:00`)).toISOString();
 
 export function livePage(db: Db, now = new Date()): LivePage {
   const today = moscowDay(now);

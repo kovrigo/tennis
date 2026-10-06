@@ -46,6 +46,12 @@ export function idParam(v: string | undefined): number {
 
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** The record an earlier create with this requestId made, if any. */
+export function createdBefore(db: Db, requestId: unknown, entity: string): number | undefined {
+  if (typeof requestId !== "string") return undefined;
+  return get<{ entity_id: number }>(db, "SELECT entity_id FROM create_requests WHERE request_id = ? AND entity = ?", requestId, entity)?.entity_id;
+}
+
 /**
  * Runs create() once per requestId: a repeated "Сохранить" after a lost answer
  * returns the record made the first time. Call inside a transaction.

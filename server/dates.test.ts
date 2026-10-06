@@ -1,9 +1,11 @@
 import { describe, expect, test } from "vitest";
+import { get } from "./db.ts";
+import type { ApiError } from "./http.ts";
 import { applyAction, saveMatch, setManualResult } from "./services/matches.ts";
 import { pointsFor } from "./seeds/points.ts";
 import { saveTournament } from "./services/tournaments.ts";
 import { action, addJudge, addMatchSetup, memoryDb } from "./testkit.ts";
-import { durationText, moscowDay, moscowTime } from "./time.ts";
+import { durationText, isDay, moscowDay, moscowDayStart, moscowTime } from "./time.ts";
 import { homePage, livePage, tournamentsPage } from "./views/public.ts";
 
 // Moscow dates: S1.1 calendar groups, S2.1 online score, the day change at Moscow midnight.
@@ -14,6 +16,20 @@ describe("Moscow day", () => {
     expect(moscowDay(new Date("2026-10-06T21:00:00Z"))).toBe("2026-10-07");
     expect(moscowTime("2026-10-06T07:04:00Z")).toBe("10:04");
     expect(durationText("2026-10-06T07:00:00Z", "2026-10-06T08:12:30Z")).toBe("1 ч 13 мин");
+    expect(moscowDayStart("2026-10-06")).toBe("2026-10-05T21:00:00.000Z");
+  });
+
+  test("a day must exist in the calendar; a bad one is a field error, not a crash", () => {
+    expect(["2026-10-06", "2024-02-29"].map(isDay)).toEqual([true, true]);
+    expect(["2026-02-30", "2026-13-01", "2026-00-10", "2026-02-32", "2026-1-01", ""].map(isDay)).toEqual([false, false, false, false, false, false]);
+    const e = (() => {
+      try {
+        saveTournament(memoryDb(), { name: "Кубок", startDate: "2026-13-01", endDate: "2026-13-02", city: "Тосно", kind: "rtt" });
+      } catch (x) {
+        return x as ApiError;
+      }
+    })();
+    expect(e?.extra.fields).toEqual({ startDate: "Укажите дату начала", endDate: "Укажите дату окончания" });
   });
 });
 
@@ -68,9 +84,10 @@ describe("online score", () => {
   test("finished today: judge-finished today or scheduled today; an old match closed by a manual result today is not", () => {
     const { db, judge, matchId, more } = setup();
     const yesterdayLate = more("2026-10-05", "20:00", "Корт 3");
-    // Started yesterday 23:00 Moscow, finished today 00:30 Moscow.
+    // Started yesterday 23:00 Moscow, a point a minute: finished today just after midnight.
     const pts = pointsFor("6:0, 6:0");
     pts.forEach((side, i) => applyAction(db, yesterdayLate, judge, action("point", i, side), new Date(Date.parse("2026-10-05T20:00:00Z") + i * 60_000)));
+    expect(moscowDay(get<{ at: string }>(db, "SELECT finished_at AS at FROM matches WHERE id = ?", yesterdayLate)!.at)).toBe("2026-10-06");
     const oldWalkover = more("2026-10-05", "10:00", "Корт 4");
     setManualResult(db, oldWalkover, { winner: "a", sets: [], note: "неявка" });
     setManualResult(db, matchId, { winner: "b", sets: [], note: "отказ" });

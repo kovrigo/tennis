@@ -82,7 +82,7 @@ CREATE TABLE players (
 
 -- A place refers to a points row by id, so renaming the row keeps the place.
 CREATE TABLE placements (
-  division_id INTEGER NOT NULL REFERENCES divisions (id) ON DELETE CASCADE,
+  division_id INTEGER NOT NULL REFERENCES divisions (id),
   player_id INTEGER NOT NULL REFERENCES players (id),
   points_row_id INTEGER REFERENCES points_rows (id),
   place_text TEXT,
@@ -93,7 +93,7 @@ CREATE INDEX placements_player ON placements (player_id);
 
 CREATE TABLE matches (
   id INTEGER PRIMARY KEY,
-  division_id INTEGER NOT NULL REFERENCES divisions (id) ON DELETE CASCADE,
+  division_id INTEGER NOT NULL REFERENCES divisions (id),
   round TEXT NOT NULL,
   day TEXT NOT NULL,
   time TEXT,

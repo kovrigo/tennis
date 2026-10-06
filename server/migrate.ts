@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, renameSync, rmSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, renameSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { type Db, all, get, run } from "./db.ts";
 
@@ -99,7 +99,10 @@ export function migrationStatus(db: Db, dir: string): MigrationStatus {
 
 function backup(db: Db, dir: string, next: string): void {
   try {
-    for (const f of readdirSync(dir)) if (f.endsWith(".tmp")) rmSync(join(dir, f));
+    // Leftovers of a copy cut short. A fresh one may belong to a second process starting now.
+    for (const f of readdirSync(dir)) {
+      if (f.endsWith(".tmp") && statSync(join(dir, f)).mtimeMs < Date.now() - 10 * 60_000) rmSync(join(dir, f), { force: true });
+    }
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
     const target = join(dir, `before-${next}-${stamp}.sqlite`);
     if (existsSync(target)) throw new Error(`${target} exists`);

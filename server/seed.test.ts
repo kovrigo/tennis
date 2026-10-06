@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { verifyPassword } from "./auth.ts";
 import { all, get } from "./db.ts";
 import { replay } from "./score.ts";
 import { runSeeds } from "./seed.ts";
@@ -76,9 +77,12 @@ describe.each(MOMENTS)("samples first run at %s Moscow", (_label, iso) => {
     expect(latest <= now.toISOString()).toBe(true);
   });
 
-  test("sample judges have today's matches", () => {
+  test("sample accounts sign in with the documented passwords; judges have today's matches", async () => {
+    const users = all<{ login: string; role: string; password_hash: string }>(db, "SELECT login, role, password_hash FROM users ORDER BY login");
+    expect(users.map((u) => [u.login, u.role])).toEqual([["judge1", "judge"], ["judge2", "judge"], ["organizer", "organizer"]]);
+    const passwords = ["tennis-judge1", "tennis-judge2", "tennis-org"];
+    expect(await Promise.all(users.map((u, i) => verifyPassword(passwords[i], u.password_hash)))).toEqual([true, true, true]);
     const judges = all<{ id: number; login: string }>(db, "SELECT id, login FROM users WHERE role = 'judge' ORDER BY login");
-    expect(judges.map((j) => j.login)).toEqual(["judge1", "judge2"]);
     const today = judgeMatchesPage(db, judges[0].id, now).matches.filter((m) => m.day === judgeMatchesPage(db, judges[0].id, now).today);
     expect(today.length).toBeGreaterThanOrEqual(2);
   });

@@ -1,11 +1,11 @@
-import type { ActionRequest, AdminMatch, JudgeMatch, ManualResultInput, MatchInput, NewPlayer, Side } from "../../src/api-types.ts";
+import type { ActionRequest, AdminMatch, JudgeMatch, ManualResultInput, NewPlayer, Side } from "../../src/api-types.ts";
 import { type Db, all, get, run, tx } from "../db.ts";
 import { ApiError, fail } from "../http.ts";
 import { countedPoints, replay } from "../score.ts";
 import { isDay, isTime, moscowDay } from "../time.ts";
 import { judgeMatch } from "../views/judge.ts";
 import { actionsFor } from "../views/matchRows.ts";
-import { type Fields, UUID, check, createOnce, fullName, intOrNull, notFoundUnless, obj, required, str } from "./common.ts";
+import { type Fields, UUID, check, createOnce, createdBefore, fullName, intOrNull, notFoundUnless, obj, required, str } from "./common.ts";
 import { createPlayer, findDuplicates, playerRow, validatePlayer } from "./players.ts";
 
 // Matches: schedule, judge actions, manual result.
@@ -171,10 +171,8 @@ export function saveMatch(db: Db, body: unknown, id?: number): AdminMatch {
   check(errs);
 
   // A repeated create returns the first match before new players are checked or added again.
-  if (id === undefined && typeof b.requestId === "string") {
-    const repeated = get<{ entity_id: number }>(db, "SELECT entity_id FROM create_requests WHERE request_id = ? AND entity = 'match'", b.requestId);
-    if (repeated) return adminMatch(db, repeated.entity_id);
-  }
+  const repeated = id === undefined ? createdBefore(db, b.requestId, "match") : undefined;
+  if (repeated) return adminMatch(db, repeated);
 
   if (b.confirmDuplicate !== true) {
     for (const [side, p] of [["a", newA], ["b", newB]] as const) {
@@ -289,13 +287,17 @@ export function setManualResult(db: Db, id: number, body: unknown): AdminMatch {
     const [x, y] = Array.isArray(pair) ? pair.map((n) => intOrNull(n)) : [null, null];
     if (x === null && y === null) continue;
     if (x === null || y === null || x < 0 || y < 0 || x > 20 || y > 20) errs.sets = "Счёт сета — два числа от 0 до 20";
-    else if (x === y) errs.sets = "Счёт сета не может быть равным";
     else sets.push([x, y]);
   }
   if (rawSets.length > 3) errs.sets = "Не больше трёх сетов";
   if (winner && sets.length && !errs.sets) {
-    const won = sets.filter(([x, y]) => (winner === "a" ? x > y : y > x)).length;
-    if (won <= sets.length - won) errs.sets = "По этому счёту победил другой игрок";
+    // A match stopped early (S7.10) may end on an unfinished set, e.g. 6:4, 3:3, and level in sets.
+    const done = ([x, y]: [number, number]) => Math.max(x, y) >= 6 && (Math.abs(x - y) >= 2 || Math.max(x, y) === 7);
+    const finished = sets.filter(done);
+    const won = finished.filter(([x, y]) => (winner === "a" ? x > y : y > x)).length;
+    const lost = finished.length - won;
+    if (sets.slice(0, -1).some((s) => !done(s))) errs.sets = "Незаконченным может быть только последний сет";
+    else if (won < lost || (finished.length === sets.length && won === lost)) errs.sets = "По этому счёту победил другой игрок";
   }
   const note = str(b.note, 100);
   check(errs);

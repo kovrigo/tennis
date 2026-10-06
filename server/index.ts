@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { type AppStatus, createApp } from "./app.ts";
 import { LoginLimiter } from "./auth.ts";
 import { type Db, openDb } from "./db.ts";
-import { securityHeaders } from "./http.ts";
+import { ApiError, securityHeaders, sendError, sendJson } from "./http.ts";
 import { StartupError, migrate, migrationStatus } from "./migrate.ts";
 import { runSeeds, seedStatus } from "./seed.ts";
 import { seeds } from "./seeds/index.ts";
@@ -72,8 +72,9 @@ const handleApi = db
   ? createApp({ db, filesDir, cookieName: `tennis_session_${port}`, status, limiter: new LoginLimiter() })
   : async (req: { url?: string }, res: import("node:http").ServerResponse) => {
       if (!req.url?.startsWith("/api/")) return false;
-      res.writeHead(503, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
-      res.end(JSON.stringify({ ok: false, commit: status.commit, error: status.error }));
+      securityHeaders(res);
+      if (req.url.split("?")[0] === "/api/health") sendJson(res, 503, { ok: false, commit: status.commit, error: status.error });
+      else sendError(res, new ApiError(503, "not_ready", "Сайт обновляется. Попробуйте позже"));
       return true;
     };
 

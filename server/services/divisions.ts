@@ -17,6 +17,7 @@ export function saveDivision(db: Db, body: unknown, id?: number): AdminDivision 
   const name = required(errs, "name", b.name, "Укажите название");
   const groupId = b.groupId === null || b.groupId === undefined || b.groupId === "" ? null : intOrNull(b.groupId);
   const rawRows = Array.isArray(b.rows) ? b.rows : [];
+  if (rawRows.length > 50) errs.rows = "Не больше 50 строк в таблице очков";
   const rows: RowInput[] = rawRows.slice(0, 50).map((r, i) => {
     const o = r && typeof r === "object" ? (r as Record<string, unknown>) : {};
     const rowName = str(o.name, 100);
