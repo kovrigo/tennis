@@ -105,7 +105,7 @@ export function useApi<T>(path: string | null): Loaded<T> {
 
 /**
  * New UUID v4 for a create request or a judge's tap. Built from getRandomValues:
- * crypto.randomUUID exists only on https and localhost, and the test site is plain http.
+ * crypto.randomUUID exists only on https and localhost, and a dev site may be opened by plain http.
  */
 export function newRequestId(): string {
   const b = crypto.getRandomValues(new Uint8Array(16));

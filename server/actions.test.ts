@@ -232,7 +232,7 @@ describe("over HTTP", () => {
     const db = memoryDb();
     addOrganizer(db);
     const judge = addJudge(db);
-    matchId = addMatchSetup(db, { start: "2026-01-01", end: "2030-12-31", day: "2026-10-06", judgeId: judge }).matchId;
+    matchId = addMatchSetup(db, { start: "2026-10-05", end: "2026-10-07", day: "2026-10-06", judgeId: judge }).matchId;
     app = await startApp(db);
     judgeCookie = await app.login("judge1", "tennis-judge1");
   });
