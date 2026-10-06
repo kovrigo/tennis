@@ -1,4 +1,4 @@
-import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, scrypt, scryptSync, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import type { Role } from "../src/api-types.ts";
 import { type Db, get, run } from "./db.ts";
@@ -24,6 +24,12 @@ export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16);
   const hash = await scryptAsync(password, salt, 32);
   return `scrypt:${salt.toString("hex")}:${hash.toString("hex")}`;
+}
+
+/** Same hash, synchronous: only for seeds at startup, inside their transaction. */
+export function hashPasswordSync(password: string): string {
+  const salt = randomBytes(16);
+  return `scrypt:${salt.toString("hex")}:${scryptSync(password, salt, 32).toString("hex")}`;
 }
 
 // Unknown logins are hashed against this, so timing does not reveal which logins exist.
