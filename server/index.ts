@@ -35,6 +35,6 @@ createServer((req, res) => {
   if (!file.startsWith(dist) || !existsSync(file) || statSync(file).isDirectory()) file = join(dist, "index.html");
   res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream" });
   createReadStream(file).pipe(res);
-}).listen(port, () => {
+}).listen(port, "127.0.0.1", () => {
   console.log(`tennis ${production ? "production" : "dev"} server on http://localhost:${port} (node ${process.version})`);
 });
