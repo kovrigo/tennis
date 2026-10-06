@@ -193,6 +193,8 @@
 .j-back {
   display: inline-flex;
   align-items: center;
+  /* A flex item drops the space after "←". */
+  gap: 6px;
   min-height: 44px;
   font-weight: 600;
   color: var(--blue);
