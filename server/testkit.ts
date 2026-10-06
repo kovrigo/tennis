@@ -18,10 +18,13 @@ import { saveRegulation, saveTournament } from "./services/tournaments.ts";
 export const MIGRATIONS = join(import.meta.dirname, "migrations");
 const ROOT = join(import.meta.dirname, "..");
 
-/** New folder under the repo's tmp/ for tests that need real files. */
+/** Test folders live here; server/test-cleanup.ts removes them after the run. */
+export const TEST_TMP = join(ROOT, "tmp", "test");
+
+/** New folder under tmp/test/ for tests that need real files. */
 export function tmpDir(prefix: string): string {
-  mkdirSync(join(ROOT, "tmp"), { recursive: true });
-  return mkdtempSync(join(ROOT, "tmp", `${prefix}-`));
+  mkdirSync(TEST_TMP, { recursive: true });
+  return mkdtempSync(join(TEST_TMP, `${prefix}-`));
 }
 
 /** In-memory database with every migration and no samples. */

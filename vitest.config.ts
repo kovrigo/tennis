@@ -4,5 +4,6 @@ export default defineConfig({
   test: {
     include: ["server/**/*.test.ts"],
     exclude: ["**/node_modules/**", "tmp/**", "dist/**"],
+    globalSetup: ["server/test-cleanup.ts"],
   },
 });
