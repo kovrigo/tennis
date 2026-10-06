@@ -806,6 +806,10 @@
     background: #fff !important;
     color: #000 !important;
   }
+  /* The window-height page fills the sheet exactly; any slack would print a blank second sheet. */
+  #root {
+    min-height: 0;
+  }
   main .proto-page {
     max-width: none;
     padding: 0;
