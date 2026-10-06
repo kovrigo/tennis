@@ -151,6 +151,10 @@
   align-items: center;
   flex-wrap: wrap;
 }
+/* The question on its own line, both answers together under it: never split by a wrap. */
+.delete-ask > span {
+  width: 100%;
+}
 .delete-ask .note-error {
   width: 100%;
   margin: 8px 0 0;
