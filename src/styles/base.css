@@ -649,6 +649,8 @@ main {
 /* ---------- tables ---------- */
 .table-wrap {
   overflow-x: auto;
+  /* Hidden column labels are absolute: without this they escape the scroll box and widen the page. */
+  position: relative;
 }
 table.data {
   width: 100%;
