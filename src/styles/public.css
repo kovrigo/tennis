@@ -389,10 +389,8 @@
   font-size: 18px;
   color: var(--ink-2);
 }
+/* Plain text with an inline dot: on a narrow phone the text wraps, the dot stays beside it. */
 .live-status {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   color: var(--ink-2);
   margin: -8px 0 20px;
 }

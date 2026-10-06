@@ -30,7 +30,7 @@ export function Live(_props: { id?: string }) {
       </div>
       <p className="live-status">
         <span className={live.stale ? "live-dot off" : "live-dot"} aria-hidden="true" />
-        Идущих матчей: {data.running.length} · обновлено в {data.updatedAt}
+        Идущих матчей: {data.running.length} · обновлено в&nbsp;{data.updatedAt}
       </p>
       <StaleBanner stale={live.stale} at={data.updatedAt} />
       {none ? (
