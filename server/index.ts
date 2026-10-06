@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { chmodSync, mkdirSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
 import { type AppStatus, createApp } from "./app.ts";
@@ -44,6 +44,8 @@ const status: AppStatus = {
 let db: Db | null = null;
 try {
   for (const dir of [dataDir, filesDir, backupsDir]) mkdirSync(dir, { recursive: true });
+  // Database, copies and uploads: the machine has other accounts and services, so only the site's own user may enter.
+  chmodSync(dataDir, 0o700);
   db = openDb(join(dataDir, "tennis.sqlite"));
 } catch (e) {
   status.error = `db: ${(e as Error).message}`;
