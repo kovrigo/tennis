@@ -15,8 +15,12 @@ export function saveDivision(db: Db, body: unknown, id?: number): AdminDivision 
   const b = obj(body);
   const errs: Fields = {};
   const name = required(errs, "name", b.name, "Укажите название");
-  const groupId = b.groupId === null || b.groupId === undefined || b.groupId === "" ? null : intOrNull(b.groupId);
-  const rawRows = Array.isArray(b.rows) ? b.rows : [];
+  const noGroup = b.groupId === null || b.groupId === undefined || b.groupId === "";
+  const groupId = noGroup ? null : intOrNull(b.groupId);
+  if (!noGroup && groupId === null) errs.groupId = "Выберите рейтинговую группу";
+  // The whole table comes with every save: a body without it must not wipe the table.
+  if (!Array.isArray(b.rows)) throw fail.badRequest("Нет таблицы очков в запросе");
+  const rawRows: unknown[] = b.rows;
   if (rawRows.length > 50) errs.rows = "Не больше 50 строк в таблице очков";
   const rows: RowInput[] = rawRows.slice(0, 50).map((r, i) => {
     const o = r && typeof r === "object" ? (r as Record<string, unknown>) : {};

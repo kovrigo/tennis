@@ -56,10 +56,10 @@ export async function readBody(req: IncomingMessage, limit: number, tooLarge: st
 }
 
 /** Writes accept JSON only: a cross-site page cannot send it without a CORS preflight we never answer. */
-export async function readJson(req: IncomingMessage): Promise<unknown> {
+export async function readJson(req: IncomingMessage, limit = MAX_JSON): Promise<unknown> {
   const type = String(req.headers["content-type"] ?? "");
   if (!/^application\/json\b/i.test(type)) throw fail.badRequest("Нужен запрос в формате JSON");
-  const body = await readBody(req, MAX_JSON, "Слишком большой запрос");
+  const body = await readBody(req, limit, "Слишком большой запрос");
   try {
     return JSON.parse(body.toString("utf8") || "null");
   } catch {

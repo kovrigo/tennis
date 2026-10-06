@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { get, run } from "./db.ts";
 import { ApiError } from "./http.ts";
+import { saveDivision } from "./services/divisions.ts";
 import { applyAction, deleteMatch, saveMatch } from "./services/matches.ts";
 import { contacts, deleteNews, judgePassword, newsRows, saveContacts, saveJudge, saveNews } from "./services/people.ts";
 import { createPlayer, deletePlayer, savePlayer } from "./services/players.ts";
@@ -92,6 +93,21 @@ describe("matches and tournament dates", () => {
     expect(refused(() => saveMatch(db, { ...m, playerB: s.a })).extra?.fields).toEqual({ playerB: "Выберите двух разных игроков" });
     expect(refused(() => saveMatch(db, { ...m, round: " " })).extra?.fields).toEqual({ round: "Укажите круг" });
     expect(count(db, "matches")).toBe(1);
+  });
+
+  test("a partial or junk body does not clear the table, the group or the judge", () => {
+    const db = memoryDb();
+    const judge = addJudge(db);
+    const s = addMatchSetup(db, { start: "2026-10-01", end: "2026-10-03", day: "2026-10-02", judgeId: judge, filesDir: files, table: [["Победитель", 10]] });
+    expect(refused(() => saveDivision(db, { tournamentId: s.tournamentId, name: "Мужчины", groupId: s.division.groupId }, s.divisionId)).code).toBe("bad_request");
+    const rows = s.division.rows.map((r) => ({ id: r.id, name: r.name, points: r.points }));
+    expect(refused(() => saveDivision(db, { tournamentId: s.tournamentId, name: "Мужчины", groupId: "abc", rows }, s.divisionId)).extra?.fields).toEqual({
+      groupId: "Выберите рейтинговую группу",
+    });
+    const m = { divisionId: s.divisionId, round: "Финал", day: "2026-10-02", time: null, court: "", playerA: s.a, playerB: s.b };
+    expect(refused(() => saveMatch(db, { ...m, judgeId: 1.5 }, s.matchId)).extra?.fields).toEqual({ judgeId: "Выберите судью" });
+    expect(count(db, "points_rows")).toBe(1);
+    expect(get(db, "SELECT judge_id FROM matches WHERE id = ?", s.matchId)).toEqual({ judge_id: judge });
   });
 
   test("new tournament dates must still cover its matches", () => {

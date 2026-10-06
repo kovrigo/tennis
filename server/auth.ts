@@ -9,6 +9,8 @@ export const SESSION_HOURS = 24;
 const REFRESH_MS = 60 * 60 * 1000;
 export const MAX_FAILS = 5;
 export const LOCK_MINUTES = 15;
+/** Password checks at once, site-wide: hashing shares Node's 4 worker threads with file reads. */
+export const MAX_CHECKS = 8;
 
 export interface User {
   id: number;
@@ -120,6 +122,18 @@ export function readCookie(header: string | undefined, name: string): string | u
  */
 export class LoginLimiter {
   private fails = new Map<string, { count: number; last: number; lockedUntil: number }>();
+  private checks = 0;
+
+  /** False when MAX_CHECKS passwords are being checked already; call endCheck() after a true. */
+  startCheck(): boolean {
+    if (this.checks >= MAX_CHECKS) return false;
+    this.checks++;
+    return true;
+  }
+
+  endCheck(): void {
+    this.checks--;
+  }
 
   /** Minutes left when the login is closed, else 0. */
   lockedMinutes(login: string, now = Date.now()): number {

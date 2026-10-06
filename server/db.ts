@@ -47,7 +47,8 @@ export function tx<T>(db: Db, fn: () => T): T {
     db.exec(nested ? `RELEASE ${name}` : "COMMIT");
     return result;
   } catch (e) {
-    db.exec(nested ? `ROLLBACK TO ${name}; RELEASE ${name}` : "ROLLBACK");
+    // After a failed COMMIT (disk full) SQLite may have rolled back already: keep the real error.
+    if (db.isTransaction) db.exec(nested ? `ROLLBACK TO ${name}; RELEASE ${name}` : "ROLLBACK");
     throw e;
   }
 }

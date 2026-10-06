@@ -120,9 +120,9 @@ export function saveRegulation(db: Db, filesDir: string, tournamentId: number, n
   if (bytes.length > MAX_FILE) throw new ApiError(413, "too_large", "Файл больше 20 МБ");
   const id = randomBytes(16).toString("hex");
   const path = join(filesDir, id);
-  writeFileSync(path, bytes);
   let old: string | null;
   try {
+    writeFileSync(path, bytes);
     old = tx(db, () => {
       run(db, "INSERT INTO files (id, name, type, size, created_at) VALUES (?, ?, ?, ?, ?)", id, cleanFileName(name, ext), ext, bytes.length, new Date().toISOString());
       const prev = get<{ regulation_file_id: string | null }>(db, "SELECT regulation_file_id FROM tournaments WHERE id = ?", tournamentId)!.regulation_file_id;

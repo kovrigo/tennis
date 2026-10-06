@@ -102,6 +102,11 @@ const server = createServer(async (req, res) => {
   }
 });
 
+// A port taken by an old process must fail the start visibly, not exit 0.
+server.on("error", (e) => {
+  console.error(`server failed: ${e.message}`);
+  process.exit(1);
+});
 server.listen(port, "127.0.0.1", () => {
   console.log(`tennis ${production ? "production" : "dev"} server on port ${port} (node ${process.version}, commit ${status.commit ?? "unknown"})`);
 });

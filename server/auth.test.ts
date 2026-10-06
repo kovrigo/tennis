@@ -97,6 +97,19 @@ describe("sign-in", () => {
     expect(l.lockedMinutes("a", Date.now() + 15 * 60000 + 1)).toBe(0);
   });
 
+  test("at most eight passwords are checked at once, site-wide", () => {
+    const l = new LoginLimiter();
+    for (let i = 0; i < 8; i++) expect(l.startCheck()).toBe(true);
+    expect(l.startCheck()).toBe(false);
+    l.endCheck();
+    expect(l.startCheck()).toBe(true);
+  });
+
+  test("a sign-in body over 4 KB is refused before parsing", async () => {
+    const r = await app.call("POST", "/api/login", { body: { login: "judge1", password: "x".repeat(5000) } });
+    expect(r.status).toBe(413);
+  });
+
   test("failures older than 15 minutes are forgotten", () => {
     const l = new LoginLimiter();
     const t0 = Date.now();

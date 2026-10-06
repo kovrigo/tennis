@@ -145,7 +145,9 @@ export function saveMatch(db: Db, body: unknown, id?: number): AdminMatch {
   const day = str(b.day, 10);
   const time = str(b.time, 5) || null;
   const court = str(b.court, 60);
-  const judgeId = b.judgeId === null || b.judgeId === undefined || b.judgeId === "" ? null : intOrNull(b.judgeId);
+  const noJudge = b.judgeId === null || b.judgeId === undefined || b.judgeId === "";
+  const judgeId = noJudge ? null : intOrNull(b.judgeId);
+  if (!noJudge && judgeId === null) errs.judgeId = "Выберите судью";
   const newA = newPlayerInput(b.newA);
   const newB = newPlayerInput(b.newB);
   let playerA = newA ? 0 : (intOrNull(b.playerA) ?? 0);
