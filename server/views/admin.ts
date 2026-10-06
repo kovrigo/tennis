@@ -55,8 +55,8 @@ function scoreText(r: MatchRow): string {
     return `${sets}итог вручную${r.manualNote ? `: ${r.manualNote}` : ""}`;
   }
   if (r.state === "not_started") return "";
-  const sets = setsText(r.sets, "a");
-  return r.state === "running" ? `${sets} · идёт` : sets;
+  // The match table adds "идёт" itself.
+  return setsText(r.sets, "a");
 }
 
 export function adminTournament(db: Db, id: number, today = moscowDay()): AdminTournament {
