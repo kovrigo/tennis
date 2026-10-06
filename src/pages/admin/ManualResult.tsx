@@ -34,6 +34,10 @@ function ResultPage({ m }: { m: AdminMatch }) {
   const v = form.values;
   const back = `/admin/tournaments/${m.tournamentId}`;
   const names = { a: m.a.name, b: m.b.name };
+  // The sets error marks the half-filled sets, else every filled one; an empty set is never wrong.
+  const half = (p: [string, string]) => !p[0].trim() !== !p[1].trim();
+  const anyHalf = v.sets.some(half);
+  const badSet = (p: [string, string]) => Boolean(form.errors.sets) && (anyHalf ? half(p) : Boolean(p[0].trim() || p[1].trim()));
 
   const setScore = (set: number, side: 0 | 1, text: string) =>
     form.set(
@@ -77,7 +81,7 @@ function ResultPage({ m }: { m: AdminMatch }) {
           ))}
         </RadioField>
 
-        <fieldset className={form.errors.sets ? "field invalid" : "field"}>
+        <fieldset className="field">
           <legend className="label">
             Счёт по сетам<span className="opt"> (необязательно)</span>
           </legend>
@@ -107,7 +111,7 @@ function ResultPage({ m }: { m: AdminMatch }) {
                         max={7}
                         inputMode="numeric"
                         aria-label={`${names[s]}, ${i + 1}-й сет`}
-                        aria-invalid={form.errors.sets ? true : undefined}
+                        aria-invalid={badSet(pair) ? true : undefined}
                         value={pair[side]}
                         onChange={(e) => setScore(i, side as 0 | 1, e.target.value)}
                       />
