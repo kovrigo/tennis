@@ -10,7 +10,9 @@ export function NotFound() {
   useTitle("Такой страницы нет");
   return (
     <div className="wrap state">
-      <p>Такой страницы нет</p>
+      <div className="sec-h">
+        <h1>Такой страницы нет</h1>
+      </div>
       <div className="acts">
         <Link className="btn btn-p" to="/">
           На главную
