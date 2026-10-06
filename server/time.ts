@@ -31,10 +31,13 @@ export function addDays(day: string, n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/** Longest tournament, in days. A save refuses more, so the page shows every day. */
+export const MAX_DAYS = 400;
+
 /** Every day from start to end inclusive. */
 export function daysBetween(start: string, end: string): string[] {
   const out: string[] = [];
-  for (let d = start; d <= end && out.length < 400; d = addDays(d, 1)) out.push(d);
+  for (let d = start; d <= end && out.length < MAX_DAYS; d = addDays(d, 1)) out.push(d);
   return out;
 }
 

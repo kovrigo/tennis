@@ -117,6 +117,13 @@ describe("matches and tournament dates", () => {
     expect(refused(() => saveTournament(db, t, s.tournamentId)).extra?.fields).toEqual({ endDate: "Есть матчи вне этих дат. Сначала перенесите их" });
     saveTournament(db, { ...t, endDate: "2026-10-02" }, s.tournamentId);
   });
+
+  test("a tournament lasts at most 400 days, so its page shows every day", () => {
+    const db = memoryDb();
+    const t = { name: "Турнир", startDate: "2026-10-01", endDate: "2027-11-04", city: "Тосно", venue: "", kind: "amateur", category: "" };
+    expect(saveTournament(db, t)).toBeGreaterThan(0);
+    expect(refused(() => saveTournament(db, { ...t, endDate: "2027-11-05" })).extra?.fields).toEqual({ endDate: "Турнир не длиннее 400 дней" });
+  });
 });
 
 describe("delete rules", () => {

@@ -4,7 +4,7 @@ import { join } from "node:path";
 import type { FileInfo, FileType, TournamentKind } from "../../src/api-types.ts";
 import { type Db, get, run, tx } from "../db.ts";
 import { ApiError, fail } from "../http.ts";
-import { isDay } from "../time.ts";
+import { MAX_DAYS, addDays, isDay } from "../time.ts";
 import { type Fields, check, createOnce, notFoundUnless, obj, required, str } from "./common.ts";
 
 // Tournaments and their regulation file.
@@ -24,6 +24,7 @@ export function saveTournament(db: Db, body: unknown, id?: number): number {
   if (!isDay(startDate)) errs.startDate = "Укажите дату начала";
   if (!isDay(endDate)) errs.endDate = "Укажите дату окончания";
   else if (isDay(startDate) && endDate < startDate) errs.endDate = "Дата окончания раньше даты начала";
+  else if (isDay(startDate) && endDate > addDays(startDate, MAX_DAYS - 1)) errs.endDate = `Турнир не длиннее ${MAX_DAYS} дней`;
   if (!kind) errs.kind = "Выберите: РТТ или любительский";
   check(errs);
 

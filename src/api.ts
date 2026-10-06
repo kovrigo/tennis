@@ -35,6 +35,8 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
   const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 10_000);
   const raw = opts.body instanceof Blob;
   let res: Response;
+  let data: unknown = null;
+  // The timeout covers the body too: a body that stalls after the headers is no answer.
   try {
     res = await fetch(path, {
       method: opts.method ?? "GET",
@@ -43,16 +45,16 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
       signal: ctrl.signal,
       credentials: "same-origin",
     });
+    try {
+      data = await res.json();
+    } catch (e) {
+      if (ctrl.signal.aborted) throw e;
+      // A proxy error page or an empty body.
+    }
   } catch {
     throw new ApiFailure("network", 0, null);
   } finally {
     clearTimeout(timer);
-  }
-  let data: unknown = null;
-  try {
-    data = await res.json();
-  } catch {
-    // A proxy error page or an empty body.
   }
   if (res.ok) return data as T;
   const body = data && typeof data === "object" && "error" in data ? (data as ApiErrorBody) : null;
