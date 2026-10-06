@@ -45,7 +45,8 @@ export function useLocation(): Location {
 
 /** "/tournaments/:id" against "/tournaments/7" → { id: "7" }; no match → null. */
 export function matchPath(pattern: string, path: string): Record<string, string> | null {
-  const a = path.replace(/\/+$/, "").split("/");
+  // "/" stays "/"; "/news/" matches "/news".
+  const a = (path.replace(/\/+$/, "") || "/").split("/");
   const b = pattern.split("/");
   if (a.length !== b.length) return null;
   const params: Record<string, string> = {};

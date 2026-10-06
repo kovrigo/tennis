@@ -1,7 +1,9 @@
 /* Organizer forms and lists. Same tokens as the public site. */
 
+/* Top and bottom only: the side gutter comes from ".wrap". */
 .admin {
-  padding: 36px 0 24px;
+  padding-top: 36px;
+  padding-bottom: 24px;
 }
 .admin h1 {
   font-size: 27px;

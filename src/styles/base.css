@@ -380,8 +380,15 @@ nav.main .end {
 }
 
 /* ---------- sections ---------- */
+/* The footer sits at the bottom of the window on short pages. */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 main {
   display: block;
+  flex: 1 0 auto;
 }
 .section {
   padding-top: 56px;
@@ -625,6 +632,10 @@ main {
 }
 .match .mf .time {
   margin-left: auto;
+}
+/* A match not started has no protocol or time: no empty strip. */
+.match .mf:empty {
+  display: none;
 }
 
 /* ---------- tables ---------- */
@@ -882,7 +893,8 @@ table.data tbody tr:hover {
   }
   .head {
     flex-wrap: wrap;
-    padding: 14px 0 0;
+    padding-top: 14px;
+    padding-bottom: 0;
     gap: 10px;
     min-height: 0;
   }
