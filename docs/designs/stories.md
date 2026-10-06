@@ -1,95 +1,98 @@
-# Stories: Leningrad Oblast Tennis Federation website, first version
+# Истории: сайт Федерации тенниса ЛО, первая версия
 
-Brief: the Brief for the federation website, first version.
+Бриф: бриф сайта федерации, первая версия.
 
-Roles: visitor (player, parent, coach or fan; no account), organizer (federation staff who run the site), chair umpire (keeps one match's score).
+Роли: посетитель (игрок, родитель, тренер, болельщик; без регистрации), организатор (сотрудник федерации), судья (судья на вышке).
 
-## Stories
+## Истории
 
-- **S1.** As a visitor, I want to see upcoming, current and finished tournaments with their key facts and regulation, so that I can plan which ones to play or watch.
-  - RTT and amateur tournaments are shown apart; search by name or city.
-- **S2.** As a visitor, I want to follow the score of matches being played right now, so that I know what happens on court without being there.
-  - A point shows within a few seconds, with no reload, including the current game.
-- **S3.** As a visitor, I want to see a tournament's matches by day and court with their results, so that I know when a player plays and how it went.
-- **S4.** As a visitor, I want to see the federation's rating lists and where each player's points came from, so that I can trust a player's place.
-  - Points come only from a regulation's points table; national RTT points are never calculated.
-  - Public player data is name, city and club only.
-- **S5.** As a visitor, I want to read the federation's news, so that I hear about events and results.
-- **S6.** As an organizer, I want to publish a tournament with its events, players and matches, each with a court, time and chair umpire, so that visitors and umpires see the plan.
-  - Visitors see nothing until it is published.
-  - Only organizers create accounts, for chair umpires and other organizers.
-- **S7.** As an organizer, I want to set up points tables and rating lists from the regulations, and record and correct results and final stages, so that points reach the rating exactly as the regulation sets them.
-  - Each points table names its regulation; a sample table says it is a sample.
-  - Points are fixed when the event closes; only reopening the event recalculates them.
-  - A final score can be entered for a match nobody scored live.
-- **S8.** As an organizer, I want to publish news, so that visitors hear about the federation's events.
-- **S9.** As a chair umpire, I want to keep my match's score point by point from a phone, so that visitors and the organizer see it live.
-  - Only matches assigned to me; I can undo, pause, and end early by retirement, walkover or default.
-  - A dropped connection or a page reload loses no point and counts none twice.
-  - One phone per match; the organizer can hand it to another phone.
-- **S10.** As an organizer, I want a printable protocol of every match, so that the tournament keeps a record of how each match went.
-  - Anyone can open and print it.
+- **S1.** Как посетитель, я хочу видеть календарь турниров — предстоящих, идущих и завершённых — с основными сведениями и положением, чтобы выбрать, где играть или за чем следить.
+  - Турниры РТТ и любительские отмечены.
+- **S2.** Как посетитель, я хочу следить за счётом идущих матчей, чтобы знать, что происходит на корте, не находясь там.
+  - Счёт обновляется сам, не реже раза в 15 секунд, вместе с текущим геймом.
+- **S3.** Как посетитель, я хочу видеть матчи турнира по дням и кортам с итоговым счётом, чтобы знать, когда играет игрок и чем закончился матч.
+- **S4.** Как посетитель, я хочу видеть рейтинг и из каких турниров сложились очки игрока, чтобы доверять его месту.
+  - Очки — только по таблице из положения турнира; таблица и положение открыты всем.
+  - Образцы на тестовом сайте помечены как образцы.
+  - Об игроке публикуются только имя, фамилия и город.
+- **S5.** Как посетитель, я хочу читать новости федерации, чтобы быть в курсе турниров и итогов.
+- **S6.** Как организатор, я хочу вносить турниры, игроков, расписание матчей с кортами, временем и судьями, а также новости, чтобы посетители и судьи видели актуальные данные.
+  - Учётные записи судей заводит только организатор.
+- **S7.** Как организатор, я хочу переносить таблицу очков из положения, отмечать итоговые места и вносить итоговый счёт вручную, чтобы очки в рейтинге точно соответствовали положению.
+  - Настоящие очки — только после получения положения.
+  - Итог вручную — для матчей без судьи и законченных досрочно.
+- **S8.** Как посетитель, я хочу знать, как связаться с федерацией, чтобы сообщить об ошибке в счёте или имени.
+- **S9.** Как судья, я хочу вести счёт назначенного мне одиночного матча по очкам с телефона, чтобы посетители и организатор видели его сразу.
+  - Только назначенные мне матчи; последнее очко можно отменить.
+  - Несохранённое очко видно сразу; повторная отправка не засчитывает его дважды.
+- **S10.** Как организатор, я хочу печатный протокол каждого матча, чтобы у турнира оставалась запись хода матча.
+  - Открыть и распечатать протокол может любой посетитель.
 
-## Coverage
+## Покрытие
 
-Each outcome, with the story that covers it for each role. "gap" means the role may need it and the Brief is silent; "none" means the role has no use for it.
+Для каждого результата — история, которая покрывает его для каждой роли. «нет» — роли это не нужно; «позже» — сознательно отложено, см. «Что позже» в брифе.
 
-- See the tournament calendar
-  - Visitor: S1
-  - Organizer: S6
-  - Chair umpire: none
-- Follow live scores
-  - Visitor: S2
-  - Organizer: gap (watch every court at once while running the day)
-  - Chair umpire: none
-- See matches by day, court and result
-  - Visitor: S3
-  - Organizer: S6
-  - Chair umpire: S9 (own matches on every day)
-- See rating and points
-  - Visitor: S4
-  - Organizer: S7
-  - Chair umpire: none
-- Read and publish news
-  - Visitor: S5
-  - Organizer: S8
-  - Chair umpire: none
-- Keep a match's score
-  - Visitor: none
-  - Organizer: S7 (final score by hand)
-  - Chair umpire: S9
-- Get a match protocol
-  - Visitor: S10
-  - Organizer: S10
-  - Chair umpire: gap (confirm the protocol of the match they scored)
-- Get access to the site
-  - Visitor: none
-  - Organizer: gap (who may become an organizer)
-  - Chair umpire: S6
-- Fix wrong public data
-  - Visitor: gap (report a wrong result or name)
-  - Organizer: S7
-  - Chair umpire: S9 (undo)
+- Календарь турниров
+  - Посетитель: S1
+  - Организатор: S6
+  - Судья: нет
+- Онлайн-счёт
+  - Посетитель: S2
+  - Организатор: S2 (та же страница как обзор всех кортов)
+  - Судья: нет
+- Матчи и итоги турнира
+  - Посетитель: S3
+  - Организатор: S6, S7
+  - Судья: S9 (свои матчи)
+- Рейтинг и очки
+  - Посетитель: S4
+  - Организатор: S7
+  - Судья: нет
+- Новости
+  - Посетитель: S5
+  - Организатор: S6
+  - Судья: нет
+- Ведение счёта
+  - Посетитель: нет
+  - Организатор: S7 (итог вручную)
+  - Судья: S9
+- Протокол матча
+  - Посетитель: S10
+  - Организатор: S10
+  - Судья: позже (подтверждение протокола судьёй)
+- Доступ к сайту
+  - Посетитель: нет
+  - Организатор: на тестовом сайте — образец учётной записи; доступ настоящих сотрудников и права по клубам — позже
+  - Судья: S6
+- Исправление ошибок
+  - Посетитель: S8
+  - Организатор: S6, S7
+  - Судья: S9 (отмена очка)
 
-## Gaps
+## Пробелы
 
-- **Organizer, watch every court at once.** On tournament day the organizer runs several courts. The Brief gives only the public live page; it is silent on whether that is enough.
-- **Chair umpire, confirm the protocol of the match they scored.** Paper protocols are usually signed by the umpire. The Brief has no sign-off step.
-- **Organizer, who may become an organizer.** The Brief creates the first organizer at install and lets any organizer add others. It does not say who decides.
-- **Visitor, report a wrong result or name.** A parent may spot a wrong score or a misspelt child's name. The Brief offers only the footer contacts, and no way to ask to hide a minor's name.
-- out: "Going live: production hosting, a domain name, backups and sending email."
-- out: "Online entries, entry fees, waiting lists and payments."
-- out: "Draw generation, seeding, brackets and automatic advancement."
-- out: "Any sync with the national RTT calendar or ratings."
-- out: "Calculating national RTT points."
-- out: "Rating rules beyond the plain sum in a set period (see the list above)."
-- out: "The official federation protocol layout, until we receive a blank sample."
-- out: "Export beyond printing one match protocol, such as a whole tournament's results."
-- out: "Tracking the individual server in doubles."
-- out: "Match statistics beyond the score (aces, faults and similar)."
-- out: "Player accounts, following a player, and notifications by email or messenger."
-- out: "About, documents, clubs and courts, coaches and referees pages."
-- out: "Site-wide search and the side filters from the prototype."
-- out: "Redesign beyond the prototype, and an English version."
-- out: "Merging duplicate player records."
-- out: "A full history of who changed what."
+Открытых пробелов нет. Прежние пробелы закрыты так:
+
+- **Обзор всех кортов для организатора** — публичная страница онлайн-счёта (S2).
+- **Подтверждение протокола судьёй** — позже.
+- **Кто может стать организатором, права по клубам** — позже; в этой версии одна роль организатора.
+- **Сообщение об ошибке** — контакты федерации в подвале (S8).
+
+Вне этой версии, словами брифа:
+
+- вне версии: «Публичный запуск на рабочем сайте, домен, доступ для настоящих сотрудников.»
+- вне версии: «Парные разряды и матчи.»
+- вне версии: «Другие форматы матча: решающий тай-брейк, короткие сеты, игра без «больше-меньше».»
+- вне версии: «Отметка подающего, пауза, досрочное завершение матча судьёй, работа без сети, передача матча на другой телефон.»
+- вне версии: «Правила рейтинга из положения: сезоны, лучшие результаты, порядок при равенстве очков, изменение места за неделю.»
+- вне версии: «Сетки, жеребьёвка и посев.»
+- вне версии: «Онлайн-заявки, взносы и оплата.»
+- вне версии: «Связь с календарём и рейтингом РТТ.»
+- вне версии: «Официальный бланк протокола и подтверждение протокола судьёй.»
+- вне версии: «Права организаторов по клубам.»
+- вне версии: «Черновики и снятие с публикации.»
+- вне версии: «Поиск, фильтры и разделы «О федерации», «Документы», «Клубы и корты», «Тренеры».»
+- вне версии: «Картинки в новостях, партнёры, соцсети.»
+- вне версии: «Личные кабинеты игроков, подписки и уведомления.»
+- вне версии: «Объединение повторяющихся игроков и история изменений.»
+- вне версии: «Редизайн и английская версия.»
