@@ -623,7 +623,9 @@ main {
 .match .mf {
   display: flex;
   align-items: center;
-  gap: 18px;
+  /* On a narrow phone the time moves to its own line instead of squeezing the links. */
+  flex-wrap: wrap;
+  gap: 0 18px;
   padding: 6px 18px;
   border-top: 1px solid var(--line);
   font-size: 14px;
@@ -638,8 +640,13 @@ main {
   align-items: center;
   min-height: 44px;
 }
+.match .mf a,
+.match .mf .time {
+  white-space: nowrap;
+}
 .match .mf .time {
   margin-left: auto;
+  padding: 6px 0;
 }
 /* A match not started has no protocol or time: no empty strip. */
 .match .mf:empty {
