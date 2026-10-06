@@ -351,6 +351,8 @@
 }
 .res-table td:first-child {
   font-weight: 600;
+  /* A place name breaks between words, not inside "Победитель", on a 320 px phone. */
+  overflow-wrap: break-word;
 }
 .res-table td.pts {
   font-family: var(--display);
