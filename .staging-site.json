@@ -1,0 +1,5 @@
+{
+  "cmd": "bun install --frozen-lockfile && bun run build && PORT=$PORT bun run start",
+  "url_path": "/",
+  "check_path": "/api/health"
+}

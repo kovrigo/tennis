@@ -1,0 +1,7 @@
+{
+  "service": {
+    "cmd": "bun install --frozen-lockfile && PORT=$PORT bun run dev",
+    "url_path": "/",
+    "note": "Node server with Vite in middleware mode: React hot reload and /api on one port."
+  }
+}
