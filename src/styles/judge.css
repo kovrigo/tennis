@@ -1,0 +1,400 @@
+/* Login and judge screens. Judge screens are for a phone in one hand outdoors:
+   large, high contrast, white background. The scoring screen fits 375×667 without
+   scrolling; at 320×568 both point buttons are visible.
+   This file loads before base.css, so rules that override a base class use a
+   compound selector. */
+
+/* ---------- login ---------- */
+.wrap.j-login-page {
+  padding-top: 40px;
+  padding-bottom: 24px;
+}
+.j-login-page h1 {
+  font-size: 27px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+.j-login-card {
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 24px;
+}
+.j-login-btn {
+  width: 100%;
+  max-width: 520px;
+  font-size: 16px;
+}
+
+/* ---------- judge frame ---------- */
+.j-screen {
+  background: var(--surface);
+  /* The footer starts below the first screen. */
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.wrap.j-wrap {
+  max-width: 560px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
+.j-screen .empty {
+  margin-top: 16px;
+}
+.j-relogin {
+  border: 1px solid var(--line);
+  padding: 16px;
+}
+.j-relogin-h {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--red-dark);
+  margin: 0 0 12px;
+}
+
+/* ---------- my matches ---------- */
+.j-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.j-who {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.j-top .j-logout {
+  margin-left: auto;
+}
+.j-group h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 20px 0 8px;
+}
+.j-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.j-list li + li {
+  border-top: 1px solid var(--line);
+}
+.j-row {
+  display: block;
+  min-height: 56px;
+  padding: 10px 14px;
+}
+.j-row:hover {
+  background: #fafcfe;
+}
+.j-row-h {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 15px;
+}
+.j-row-where {
+  font-weight: 700;
+}
+.j-row-st {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+.j-row-t {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+.j-row-pl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 30px;
+}
+.j-row-pl.win {
+  font-weight: 700;
+}
+.j-row-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.j-row-word {
+  font-size: 15px;
+}
+
+/* ---------- games per set (board and list rows) ---------- */
+.j-games {
+  display: flex;
+  align-items: center;
+  flex: none;
+  margin-left: auto;
+}
+.j-games > span {
+  width: 26px;
+  text-align: center;
+  font-family: var(--display);
+  font-size: 22px;
+  color: var(--ink-2);
+  position: relative;
+}
+.j-games > .w {
+  color: var(--navy);
+}
+.j-games > .cur {
+  color: var(--red);
+}
+.j-games sup {
+  font-size: 12px;
+  position: absolute;
+  top: -2px;
+  margin-left: 1px;
+}
+.j-games > .game {
+  width: auto;
+  min-width: 60px;
+  margin-left: 6px;
+  padding: 2px 6px;
+  background: var(--lime);
+  color: var(--navy);
+  font-size: 40px;
+  line-height: 1.1;
+  border-radius: 2px;
+}
+.j-row .j-games > span {
+  width: 24px;
+  font-size: 19px;
+}
+.j-row .j-games > .game {
+  width: auto;
+  min-width: 36px;
+  padding: 0 4px;
+  font-size: 19px;
+  line-height: 1.4;
+}
+
+/* ---------- scoring ---------- */
+.j-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+.j-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--blue);
+}
+.j-back:hover {
+  color: var(--blue-dark);
+}
+.j-court {
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.j-sub {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+/* Always takes its line, so "Тай-брейк" does not move the buttons. */
+.j-tb {
+  height: 20px;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--red-dark);
+}
+.j-board {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+.j-pl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 2px 4px 2px 12px;
+  border-left: 4px solid transparent;
+}
+.j-pl + .j-pl {
+  border-top: 1px solid var(--line-2);
+}
+.j-pl.win {
+  border-left-color: var(--lime);
+}
+.j-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.j-pl.win .j-name {
+  font-weight: 800;
+}
+
+/* Two lines of messages, fixed height: messages never move the buttons. */
+.j-msg {
+  height: 60px;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  font-size: 17px;
+  line-height: 1.3;
+}
+.j-note {
+  overflow-wrap: anywhere;
+}
+.j-plain {
+  color: var(--navy);
+  font-weight: 600;
+}
+.j-saving {
+  color: var(--ink-2);
+}
+.j-error {
+  color: var(--red-dark);
+  font-size: 15px;
+}
+.j-warn {
+  width: 100%;
+  background: #fffbeb;
+  border: 1px solid #f2e2ae;
+  color: #6b5312;
+  padding: 3px 10px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+.j-unsent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  background: var(--red-dark);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  border-radius: var(--r);
+}
+.j-unsent > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.j-resend {
+  flex: 0 1 auto;
+  min-height: 44px;
+  padding: 4px 12px;
+  background: #fff;
+  color: var(--red-dark);
+  border-radius: var(--r);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.j-points {
+  display: grid;
+  gap: 16px;
+}
+.j-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 96px;
+  padding: 8px 16px;
+  border-radius: var(--r);
+  color: #fff;
+  text-align: center;
+}
+.j-point-a {
+  background: var(--navy);
+}
+.j-point-b {
+  background: var(--blue);
+}
+.j-point:disabled {
+  background: var(--line);
+  color: var(--ink-2);
+}
+.j-point-l {
+  font-size: 16px;
+  font-weight: 600;
+}
+.j-point-n {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.j-undo {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 24px;
+  border: 1.5px solid var(--navy);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 600;
+}
+.j-undo:disabled {
+  border-color: var(--line);
+  background: var(--line-2);
+  color: var(--ink-2);
+}
+.j-hint {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+.j-hint.j-hint-gap {
+  margin-top: 16px;
+}
+.j-final {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--lime);
+  padding: 16px;
+}
+.j-final p {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.j-off {
+  margin: 0;
+  padding: 16px;
+  background: var(--done-bg);
+  font-size: 18px;
+  font-weight: 600;
+}
