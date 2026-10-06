@@ -4,3 +4,4 @@ worktrees/
 tmp/
 .env*
 *.tsbuildinfo
+/data/

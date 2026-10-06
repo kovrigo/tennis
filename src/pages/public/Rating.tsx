@@ -1,0 +1,4 @@
+// Placeholder until the screen is built.
+export function Rating(_props: { id?: string }) {
+  return <div className="wrap state">Rating</div>;
+}

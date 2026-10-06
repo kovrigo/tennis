@@ -1,0 +1,198 @@
+/* Organizer forms and lists. Same tokens as the public site. */
+
+.admin {
+  padding: 36px 0 24px;
+}
+.admin h1 {
+  font-size: 27px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+.admin h2 {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 32px 0 14px;
+}
+.admin-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.admin-bar h1,
+.admin-bar h2 {
+  margin: 0;
+}
+.admin-bar .btn {
+  margin-left: auto;
+}
+.flash {
+  background: #eef8ee;
+  border: 1px solid #bfe0bf;
+  color: #22572a;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.form {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 24px;
+  max-width: 760px;
+}
+.form-wide {
+  max-width: none;
+}
+.field {
+  margin-bottom: 18px;
+}
+.field label,
+.field .label {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.field .opt {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.input,
+.field input[type="text"],
+.field input[type="date"],
+.field input[type="time"],
+.field input[type="number"],
+.field input[type="password"],
+.field input[type="email"],
+.field input[type="tel"],
+.field select,
+.field textarea {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #b9c5d6;
+  border-radius: var(--r);
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: #fff;
+}
+.field textarea {
+  max-width: none;
+  min-height: 220px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.field.invalid input,
+.field.invalid select,
+.field.invalid textarea,
+.input[aria-invalid="true"] {
+  border: 2px solid var(--red-dark);
+}
+.field .err {
+  color: var(--red-dark);
+  font-size: 14px;
+  margin-top: 6px;
+}
+.field .hint {
+  color: var(--ink-2);
+  font-size: 14px;
+  margin-top: 6px;
+}
+.field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.field-row .field {
+  flex: 1 1 200px;
+}
+.radios {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.radios label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  min-height: 44px;
+  margin: 0;
+}
+.form-foot {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.form-btns {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.form-btns .saved {
+  color: #22572a;
+  font-weight: 600;
+}
+.form-btns .site-link {
+  margin-left: auto;
+}
+.delete-zone {
+  margin-top: 20px;
+}
+.delete-ask {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.delete-ask .note-error {
+  width: 100%;
+  margin: 8px 0 0;
+}
+.delete-reason {
+  margin: 0;
+}
+table.data.rows tbody tr {
+  cursor: pointer;
+}
+table.data .actions {
+  white-space: nowrap;
+}
+table.data .actions a,
+table.data .actions button {
+  color: var(--blue);
+  font-weight: 600;
+  margin-right: 14px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+.inline-rows {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.inline-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.inline-row .input {
+  max-width: 320px;
+}
+.inline-row .input.short {
+  max-width: 110px;
+}
+@media (max-width: 760px) {
+  .form {
+    padding: 16px;
+  }
+  .admin h1 {
+    font-size: 23px;
+  }
+}
