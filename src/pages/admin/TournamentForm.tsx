@@ -364,8 +364,8 @@ function Matches({ t }: { t: Tournament }) {
                 return (
                   <tr key={m.id} className={first && i > 0 ? "day-first" : undefined} {...rowOpen(`/admin/matches/${m.id}`)}>
                     <td className="num nowrap">{first ? `${dayShort(m.day)}, ${weekday(m.day)}` : ""}</td>
-                    <td className="num">{m.time ?? "—"}</td>
-                    <td>{m.court || "—"}</td>
+                    <td className="num nowrap">{m.time ?? "—"}</td>
+                    <td className="nowrap">{m.court || "—"}</td>
                     <td>{m.divisionName}</td>
                     <td>{m.round}</td>
                     <td>
