@@ -1,5 +1,5 @@
 // SVG symbols from the prototype: the federation shield and the menu icons.
-// "Новости" has a new icon drawn in the same 24px, 1.7 stroke style.
+// "Новости" and the place and contact icons are drawn in the same 24px, 1.7 stroke style.
 
 export function IconSprite() {
   return (
@@ -74,6 +74,17 @@ export function IconSprite() {
         <path d="M16 8h3v11a1 1 0 0 1-2 0" />
         <path d="M8 8h5M8 11.5h5M8 15h3" />
       </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21Z" />
+        <circle cx="12" cy="9.8" r="2.3" />
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6.6 3.5h2.6l1.4 4.2-2 1.4a11 11 0 0 0 6.3 6.3l1.4-2 4.2 1.4v2.6a2 2 0 0 1-2.1 2A16.5 16.5 0 0 1 4.6 5.6a2 2 0 0 1 2-2.1Z" />
+      </symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3.5" y="5.5" width="17" height="13" rx="1.5" />
+        <path d="m4 6.5 8 6.5 8-6.5" />
+      </symbol>
     </svg>
   );
 }
@@ -86,7 +97,7 @@ export function Shield() {
   );
 }
 
-export function Icon({ id, size = 17 }: { id: "i-cup" | "i-rating" | "i-live" | "i-news"; size?: number }) {
+export function Icon({ id, size = 17 }: { id: "i-cup" | "i-rating" | "i-live" | "i-news" | "i-pin" | "i-phone" | "i-mail"; size?: number }) {
   return (
     <svg width={size} height={size} aria-hidden="true">
       <use href={`#${id}`} />

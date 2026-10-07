@@ -81,13 +81,19 @@ function Footer() {
             <dl className="fadr">
               {c?.address && (
                 <div>
-                  <dt>Адрес</dt>
+                  <dt>
+                    <Icon id="i-pin" size={20} />
+                    Адрес
+                  </dt>
                   <dd>{c.address}</dd>
                 </div>
               )}
               {c?.phone && (
                 <div>
-                  <dt>Телефон</dt>
+                  <dt>
+                    <Icon id="i-phone" size={20} />
+                    Телефон
+                  </dt>
                   <dd>
                     <a href={`tel:${c.phone.replace(/[^\d+]/g, "")}`}>{c.phone}</a>
                   </dd>
@@ -95,7 +101,10 @@ function Footer() {
               )}
               {c?.email && (
                 <div>
-                  <dt>Почта</dt>
+                  <dt>
+                    <Icon id="i-mail" size={20} />
+                    Почта
+                  </dt>
                   <dd>
                     <a href={`mailto:${c.email}`}>{c.email}</a>
                   </dd>

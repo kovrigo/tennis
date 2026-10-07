@@ -1,5 +1,6 @@
 import type { TournamentCard as Card, TournamentKind } from "../api-types.ts";
 import { dateRange } from "../format.ts";
+import { Icon } from "../layout/icons.tsx";
 import { Link } from "../router.tsx";
 
 export function KindTag({ kind }: { kind: TournamentKind }) {
@@ -13,15 +14,22 @@ export const placeText = (t: { city: string; venue: string }) => [t.city, t.venu
 export function TournamentCard({ t, withYear }: { t: Card; withYear?: boolean }) {
   return (
     <Link className={`tc ${t.kind}`} to={`/tournaments/${t.id}`}>
-      <div className="d num">{dateRange(t.startDate, t.endDate, withYear)}</div>
-      <div className="city">{placeText(t)}</div>
-      <h3>{t.name}</h3>
-      <div className="tags">
-        <KindTag kind={t.kind} />
-        {t.status === "running" && <span className="tag tag-live">Идёт</span>}
-        {t.category && <span className="cat">{t.category}</span>}
+      <div className="tc-d">
+        <span className="d num">{dateRange(t.startDate, t.endDate, withYear)}</span>
       </div>
-      {t.divisions.length > 0 && <div className="divs">{t.divisions.join(", ")}</div>}
+      <div className="tc-b">
+        <div className="city">
+          <Icon id="i-pin" size={16} />
+          {placeText(t)}
+        </div>
+        <h3>{t.name}</h3>
+        <div className="tags">
+          <KindTag kind={t.kind} />
+          {t.status === "running" && <span className="tag tag-live">Идёт</span>}
+          {t.category && <span className="cat">{t.category}</span>}
+        </div>
+        {t.divisions.length > 0 && <div className="divs">{t.divisions.join(", ")}</div>}
+      </div>
     </Link>
   );
 }

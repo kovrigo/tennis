@@ -144,7 +144,7 @@ function LiveNow() {
   const running = data?.running.slice(0, 4) ?? [];
   return (
     <section className="wrap section">
-      <div className="sec-h">
+      <div className="sec-h hot">
         <h2>Сейчас на кортах</h2>
         <Link className="more" to="/live">
           Все матчи

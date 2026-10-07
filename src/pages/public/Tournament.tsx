@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useApi } from "../../api.ts";
 import type { DivisionResults, MatchRow as Row, TournamentPage } from "../../api-types.ts";
+import { LeagueArt, leagueOf } from "../../components/League.tsx";
 import { MatchRow } from "../../components/MatchRow.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { dayLong, weekday } from "../../format.ts";
@@ -126,9 +127,15 @@ function TournamentView({ data }: { data: TournamentPage }) {
 }
 
 function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"] }) {
+  const league = leagueOf(r.name);
   return (
     <section className="res" id={`division-${r.id}`} aria-labelledby={`division-${r.id}-h`}>
       <div className="res-h">
+        {league && (
+          <span className="res-av">
+            <LeagueArt league={league} />
+          </span>
+        )}
         <h3 id={`division-${r.id}-h`}>{r.name}</h3>
         {r.groupName && <span className="muted">Рейтинг · {r.groupName}</span>}
       </div>
