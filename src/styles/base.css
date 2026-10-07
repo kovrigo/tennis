@@ -95,6 +95,8 @@
     transparent 64%
   );
   --hatch: repeating-linear-gradient(118deg, transparent 0 2px, #3f86e8 2px 6px, transparent 6px 10px);
+  /* Dark blue of the translucent layer over a photo under text: rgba(var(--sub), alpha). */
+  --sub: 8, 24, 58;
   --maxw: 1280px;
   --display: Oswald, Onest, sans-serif;
 }
@@ -1032,10 +1034,11 @@ table.data tbody tr:hover {
 }
 
 /* ---------- footer ---------- */
-/* The author's navy picture with streaks and a ball at the right; darker on the left under the text. */
+/* The author's navy picture with streaks and a ball at the right, under a translucent dark blue
+   layer: strongest under the contacts, lighter in the middle, again under the menu. */
 .site-foot {
   background:
-    linear-gradient(90deg, rgba(8, 22, 52, 0.55) 0, rgba(8, 22, 52, 0) 60%),
+    linear-gradient(90deg, rgba(var(--sub), 0.78) 0, rgba(var(--sub), 0.55) 50%, rgba(var(--sub), 0.68) 100%),
     url(../images/footer-bg.webp) right center / cover no-repeat,
     #0b1f4a;
   color: #fff;
@@ -1270,7 +1273,7 @@ table.data tbody tr:hover {
   .site-foot {
     background:
       linear-gradient(180deg, rgba(11, 31, 74, 0) 0, rgba(11, 31, 74, 0.35) 110px, #0b1f4a 230px),
-      linear-gradient(90deg, rgba(8, 22, 52, 0.7) 0, rgba(8, 22, 52, 0) 75%),
+      linear-gradient(90deg, rgba(var(--sub), 0.78) 0, rgba(var(--sub), 0.4) 100%),
       url(../images/footer-bg.webp) right -150px top / 640px auto no-repeat,
       #0b1f4a;
   }

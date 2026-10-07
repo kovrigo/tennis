@@ -100,20 +100,23 @@
   position: relative;
   z-index: 1;
 }
-/* League picture right of the title. Full hero height; "left" is the face point (60 % across
-   every league picture), kept clear of the title and inside the hero. The picture fades out
-   well before the title, so the text sits on the plain dark hero colour. */
+/* League picture right of the title. Full hero height; "--face" is the face point (60 % across
+   every league picture), kept clear of the title and inside the hero. The picture runs under the
+   text; a translucent dark blue layer over it (".sl::after", below) keeps the text readable. */
+.sl {
+  --face: clamp(660px, 70%, calc(100% - 60px));
+}
 .sl > .sl-art {
   position: absolute;
   z-index: 0;
   top: 0;
-  left: clamp(660px, 70%, calc(100% - 60px));
+  left: var(--face);
   width: auto;
   max-width: none;
   height: 100%;
   transform: translateX(-60%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0 47%, #000 58%);
-  mask-image: linear-gradient(90deg, transparent 0 47%, #000 58%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 24%);
   pointer-events: none;
 }
 .sl.rtt:has(> .sl-art),
@@ -128,9 +131,6 @@
   /* Blue picture on a red hero: a warm tint keeps the two together. */
   filter: saturate(0.85);
   opacity: 0.92;
-}
-.sl:has(> .sl-art)::after {
-  display: none;
 }
 .sl .kicker {
   display: flex;
@@ -235,6 +235,31 @@
 }
 .sl-page .sl::after {
   right: -120px;
+}
+/* The dark blue layer over the picture: same box and fade as the picture, dense under the text,
+   clear at the face. Replaces the ring. */
+.sl:has(> .sl-art)::after {
+  z-index: 0;
+  top: 0;
+  right: auto;
+  left: var(--face);
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1560 / 650;
+  transform: translateX(-60%);
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--sub), 0.86) 0,
+    rgba(var(--sub), 0.82) 42%,
+    rgba(var(--sub), 0.7) 49%,
+    rgba(var(--sub), 0.3) 54%,
+    rgba(var(--sub), 0) 58%
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  pointer-events: none;
 }
 
 /* ---------- ranking ---------- */
@@ -745,15 +770,32 @@ table.data.rk-table tbody tr:hover {
   z-index: -1;
   top: 0;
   right: 0;
-  width: min(72%, 760px);
+  width: min(100%, 1000px);
   height: 100%;
   object-fit: cover;
   object-position: 60% 28%;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 40%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18%);
+}
+/* Translucent dark blue layer over the picture under the group name, clear at the face. */
+.league-band::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--sub), 0.84) 0,
+    rgba(var(--sub), 0.7) 30%,
+    rgba(var(--sub), 0.3) 50%,
+    rgba(var(--sub), 0) 62%
+  );
 }
 .league-band.plain {
   background: url(../images/footer-bg.webp) right center / cover no-repeat, #0d1f45;
+}
+.league-band.plain::after {
+  background: linear-gradient(90deg, rgba(var(--sub), 0.8) 0, rgba(var(--sub), 0.5) 45%, rgba(var(--sub), 0.25) 100%);
 }
 .lb-name {
   font-family: var(--display);
@@ -1199,8 +1241,8 @@ table.data.rk-table tbody tr:hover {
   .hero {
     grid-template-columns: minmax(0, 1fr);
   }
-  .sl > .sl-art {
-    left: clamp(560px, 70%, calc(100% - 60px));
+  .sl {
+    --face: clamp(560px, 70%, calc(100% - 60px));
   }
   .sl h1 {
     font-size: 48px;
@@ -1219,15 +1261,28 @@ table.data.rk-table tbody tr:hover {
     padding-top: 190px;
   }
   .sl > .sl-art,
-  .sl-page .sl > .sl-art {
+  .sl:has(> .sl-art)::after {
     left: 0;
     width: 100%;
-    height: 240px;
+    height: 300px;
+    aspect-ratio: auto;
     transform: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+  }
+  .sl > .sl-art {
     object-fit: cover;
     object-position: 82% 30%;
-    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  }
+  /* Phone: the text starts low on the picture, so the layer darkens downwards. */
+  .sl:has(> .sl-art)::after {
+    background: linear-gradient(
+      180deg,
+      rgba(var(--sub), 0) 0,
+      rgba(var(--sub), 0.18) 40%,
+      rgba(var(--sub), 0.72) 64%,
+      rgba(var(--sub), 0.84) 100%
+    );
   }
   .sl h1 {
     font-size: 34px;
@@ -1248,8 +1303,11 @@ table.data.rk-table tbody tr:hover {
     min-height: 112px;
     padding: 18px 20px;
   }
+  /* Phone: picture by height, player at the right, clear of the group name. */
   .league-band .league-art {
-    width: 70%;
+    right: -30px;
+    width: auto;
+    max-width: none;
   }
   .lb-name {
     font-size: 26px;
