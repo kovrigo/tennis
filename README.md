@@ -29,6 +29,15 @@ Use `bun` for installs and scripts. Node runs the server.
   - когда образцы устарели: их даты отсчитаны от дня первого запуска.
 - Сервер вручную (`bun run dev`) не запускают.
 
+## Документация
+
+- [Урок: первый матч на тестовом сайте](docs/tutorial-test-site.md)
+- [Как работать организатору и судье](docs/how-to-organizer-judge.md)
+- [Справка](docs/reference-site.md)
+- [Образцы, очки и рейтинг](docs/explanation-samples-and-scoring.md)
+- [Изменения](CHANGELOG.md)
+- Решения первой версии: `docs/designs/`
+
 ## Servers
 
 - Dev: `paneweb up` in a worktree runs `.paneweb.json`.
