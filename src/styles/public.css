@@ -100,19 +100,29 @@
   position: relative;
   z-index: 1;
 }
-/* League picture on the right; its dark left side fades into the hero colour. */
+/* League picture right of the title. Full hero height; "left" is the face point (60 % across
+   every league picture), kept clear of the title and inside the hero. The picture fades out
+   well before the title, so the text sits on the plain dark hero colour. */
 .sl > .sl-art {
   position: absolute;
   z-index: 0;
   top: 0;
-  right: 0;
-  width: min(78%, 980px);
+  left: clamp(660px, 70%, calc(100% - 60px));
+  width: auto;
+  max-width: none;
   height: 100%;
-  object-fit: cover;
-  object-position: right center;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 38%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 38%);
+  transform: translateX(-60%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0 47%, #000 58%);
+  mask-image: linear-gradient(90deg, transparent 0 47%, #000 58%);
   pointer-events: none;
+}
+.sl.rtt:has(> .sl-art),
+.sl-page.rtt:has(.sl-art) {
+  background: linear-gradient(100deg, #0e2756 0%, #143a7c 48%, #1d52a6 100%);
+}
+.sl.amateur:has(> .sl-art),
+.sl-page.amateur:has(.sl-art) {
+  background: linear-gradient(100deg, #5a120e 0%, #8e1f18 48%, #3f1430 100%);
 }
 .sl.amateur > .sl-art {
   /* Blue picture on a red hero: a warm tint keeps the two together. */
@@ -222,9 +232,6 @@
 }
 .sl-page .sl::before {
   z-index: -1;
-}
-.sl-page .sl > .sl-art {
-  width: min(70%, 1100px);
 }
 .sl-page .sl::after {
   right: -120px;
@@ -1192,6 +1199,9 @@ table.data.rk-table tbody tr:hover {
   .hero {
     grid-template-columns: minmax(0, 1fr);
   }
+  .sl > .sl-art {
+    left: clamp(560px, 70%, calc(100% - 60px));
+  }
   .sl h1 {
     font-size: 48px;
   }
@@ -1210,8 +1220,11 @@ table.data.rk-table tbody tr:hover {
   }
   .sl > .sl-art,
   .sl-page .sl > .sl-art {
+    left: 0;
     width: 100%;
     height: 240px;
+    transform: none;
+    object-fit: cover;
     object-position: 82% 30%;
     -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
     mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
