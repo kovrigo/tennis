@@ -5,6 +5,7 @@ import { LeagueFace, leagueOf } from "../../components/League.tsx";
 import { MatchRow } from "../../components/MatchRow.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { dayLong, weekday } from "../../format.ts";
+import { placeClass } from "../../place.ts";
 import { Link, navigate, useLocation } from "../../router.tsx";
 import { useTitle } from "../../site.tsx";
 import { PlayerLinks, TournamentHead, fileHref, regulationText } from "./parts.tsx";
@@ -153,8 +154,8 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
                 </tr>
               </thead>
               <tbody>
-                {r.rows.map((row, i) => (
-                  <tr key={row.id} className={`rk-cells${i < 3 ? ` m${i + 1}` : ""}`}>
+                {r.rows.map((row) => (
+                  <tr key={row.id} className={`rk-cells${placeClass(row.name, row.players.length > 0)}`}>
                     <td>{row.name}</td>
                     <td className="num pts">{row.points}</td>
                     <td>
@@ -181,8 +182,8 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
         <>
           {r.anyPlacements ? (
             <ul className="places rk-panel">
-              {r.places.map((p, i) => (
-                <li key={p.place} className={`rk-row${i < 3 ? ` m${i + 1}` : ""}`}>
+              {r.places.map((p) => (
+                <li key={p.place} className={`rk-row${placeClass(p.place, true)}`}>
                   <b>{p.place}</b> — <PlayerLinks players={p.players} />
                 </li>
               ))}

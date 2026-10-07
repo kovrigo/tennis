@@ -344,11 +344,11 @@
 }
 .rk-row .medal,
 .rk-cells .medal {
-  color: #7a889e;
+  color: #66748a;
 }
 .rk-row .m1,
 .rk-cells .m1 {
-  color: #c27c00;
+  color: #9a6700;
 }
 .rk-row .m2,
 .rk-cells .m2 {
@@ -356,7 +356,7 @@
 }
 .rk-row .m3,
 .rk-cells .m3 {
-  color: #d4580a;
+  color: #b84a08;
 }
 /* Ranking tables: the same rows, built from cells; column labels above them. */
 .table-wrap.rk-panel {
