@@ -1,0 +1,905 @@
+/* Public screens: home hero and rating, news cards, tournament page, online score,
+   rating, player, news item and the match protocol with its print sheet.
+   Hero, rating rows and news cards are ported from the prototype. */
+
+/* ---------- shared ---------- */
+.go {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.go:hover {
+  color: var(--blue-dark);
+}
+.sub-h {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.grp + .grp {
+  margin-top: 40px;
+}
+.after-empty {
+  margin: 16px 0 0;
+}
+.plink {
+  color: var(--navy);
+  border-bottom: 1px solid var(--line);
+}
+.plink:hover {
+  color: var(--blue);
+}
+
+/* ---------- big tournament block (home hero, tournament header) ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 372px;
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sl {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 452px;
+  padding: 48px 48px 40px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+/* The blue focus ring would vanish on the blue and red hero. */
+.sl :focus-visible,
+.sl-page :focus-visible {
+  outline-color: #fff;
+}
+.sl.rtt,
+.sl-page.rtt {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    linear-gradient(135deg, #1e4e9a, #2f6fcb 55%, #12233f);
+}
+.sl.amateur,
+.sl-page.amateur {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    linear-gradient(135deg, #8e1b14, #e23127 60%, #3a0e0a);
+}
+.sl.none {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
+    linear-gradient(135deg, #123a6b, #3e7fb8 55%, #0c1b30);
+}
+.sl::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  top: -50px;
+  width: 360px;
+  height: 360px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+}
+.sl > * {
+  position: relative;
+  z-index: 1;
+}
+.sl .kicker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.sl .dates {
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 5px 12px;
+}
+.sl h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  max-width: 18ch;
+  overflow-wrap: anywhere;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 36px;
+  margin: 26px 0 28px;
+  max-width: 640px;
+}
+.facts > div {
+  border-top: 2px solid rgba(255, 255, 255, 0.35);
+  padding-top: 9px;
+  min-width: 130px;
+  max-width: 100%;
+}
+.facts dt {
+  font-size: 12px;
+  letter-spacing: 1.3px;
+  color: #fff;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.facts dd {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.sl .acts {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.sl-empty {
+  font-family: var(--display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0 0 24px;
+}
+.no-reg {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: #fff;
+}
+/* Tournament page: the colour spans the page width, the content follows the page column. */
+.sl-page {
+  position: relative;
+  overflow: hidden;
+}
+.sl-page .sl {
+  background: none;
+  min-height: 0;
+  padding: 44px 0 40px;
+  overflow: visible;
+}
+.sl-page .sl::after {
+  right: -120px;
+}
+
+/* ---------- home: rating aside ---------- */
+.aside {
+  background: var(--surface);
+  padding: 26px;
+  min-width: 0;
+}
+.aside h2 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 14px;
+}
+.aside .pills {
+  margin-bottom: 6px;
+}
+.grp-one {
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.rk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rk {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.rk:last-child {
+  border-bottom: 0;
+}
+.rk .pos {
+  font-size: 20px;
+  width: 24px;
+  flex: none;
+  text-align: center;
+}
+.rk .av {
+  width: 38px;
+  height: 38px;
+  font-size: 13px;
+}
+.rk .who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+.rk .nm {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+/* The whole row is the link to the player. */
+.rk .nm::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.rk:hover .nm {
+  color: var(--blue);
+}
+.rk .pts {
+  margin-left: auto;
+  font-family: var(--display);
+  font-size: 19px;
+  flex: none;
+}
+.rk-note {
+  margin: 12px 0 0;
+}
+.rk-all {
+  width: 100%;
+  margin-top: 16px;
+}
+.aside .empty {
+  margin: 8px 0 0;
+}
+
+/* ---------- news cards ---------- */
+.ncards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+.nc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.nc:hover {
+  border-color: var(--blue);
+}
+.nc .dt {
+  font-family: var(--display);
+  font-size: 16px;
+  color: var(--red);
+  letter-spacing: 0.3px;
+}
+.nc h2,
+.nc h3 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.nc .ex {
+  margin: 0;
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.nc .rd {
+  margin-top: auto;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--blue);
+}
+
+/* ---------- tournament page ---------- */
+.court + .court {
+  margin-top: 28px;
+}
+.court-h {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.res + .res {
+  margin-top: 44px;
+}
+.res-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-bottom: 14px;
+}
+.res-h h3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.res .note {
+  margin-bottom: 14px;
+}
+.res .empty {
+  margin: 0 0 14px;
+}
+.res-table th:first-child {
+  width: 32%;
+}
+.res-table th:nth-child(2) {
+  width: 14%;
+}
+.res-table td {
+  overflow-wrap: anywhere;
+}
+.res-table td:first-child {
+  font-weight: 600;
+  /* A place name breaks between words, not inside "Победитель", on a 320 px phone. */
+  overflow-wrap: break-word;
+}
+.res-table td.pts {
+  font-family: var(--display);
+  font-size: 18px;
+  white-space: nowrap;
+}
+.res-foot {
+  margin: 12px 0 0;
+  color: var(--ink-2);
+}
+.res-foot .link {
+  display: inline-block;
+  padding: 10px 0 2px;
+  border-bottom: 1px solid currentColor;
+}
+.places {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.places li {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-2);
+  overflow-wrap: anywhere;
+}
+.places li:last-child {
+  border-bottom: 0;
+}
+
+/* ---------- online score ---------- */
+.live-day {
+  font-size: 18px;
+  color: var(--ink-2);
+}
+/* Plain text with an inline dot: on a narrow phone the text wraps, the dot stays beside it. */
+.live-status {
+  color: var(--ink-2);
+  margin: -8px 0 20px;
+}
+
+/* ---------- rating ---------- */
+.rt .medal {
+  width: 76px;
+}
+.pl-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+.pl-cell .who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+.pl-cell .nm {
+  font-weight: 600;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+/* The whole player cell is the link. */
+.pl-cell .nm::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.pl-cell:hover .nm {
+  color: var(--blue);
+}
+.pl-cell .sub {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.t-phone {
+  display: none;
+}
+
+/* ---------- player ---------- */
+.player-h h1 {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
+}
+.player-h p {
+  font-size: 18px;
+  margin: 8px 0 0;
+}
+.pgroups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pg {
+  flex: 0 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  padding: 16px 18px;
+}
+.pg:hover {
+  background: #fbfcfe;
+}
+.pg-name {
+  font-weight: 700;
+  color: var(--blue);
+  overflow-wrap: anywhere;
+}
+.pres {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.pres li {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) auto;
+  gap: 2px 20px;
+  align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--line-2);
+}
+.pres li:last-child {
+  border-bottom: 0;
+}
+.pres .d {
+  grid-row: span 2;
+  font-family: var(--display);
+  font-size: 17px;
+  color: var(--red);
+}
+.pres-t {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.pres-t:hover {
+  color: var(--blue);
+}
+.pres-m {
+  grid-column: 2;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.pres-l {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+}
+.pres-l a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- news item ---------- */
+.news-item .dt {
+  font-family: var(--display);
+  font-size: 17px;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.news-item h1 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  max-width: 36ch;
+  margin-bottom: 24px;
+  overflow-wrap: anywhere;
+}
+.news-body {
+  max-width: 68ch;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.news-body p {
+  margin: 0 0 16px;
+}
+
+/* ---------- protocol on screen ---------- */
+.proto-page {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.proto-acts {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 880px;
+  margin-bottom: 16px;
+}
+.proto {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 32px 36px;
+  max-width: 880px;
+}
+.proto-h {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 20px;
+}
+.proto-h svg {
+  width: 44px;
+  height: 56px;
+  flex: none;
+}
+.proto-org {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--ink-2);
+}
+.proto-h h1 {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.proto-msg {
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+.pd {
+  margin: 0 0 20px;
+}
+.pd div {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line-2);
+}
+.pd dt {
+  color: var(--ink-2);
+}
+.pd dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.proto-players {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.proto-players li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 12px;
+  font-size: 18px;
+  padding-left: 12px;
+  border-left: 4px solid transparent;
+}
+.proto-players li.win {
+  border-left-color: var(--lime);
+  font-weight: 700;
+}
+.proto-players a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+.proto-players a:hover {
+  color: var(--blue);
+}
+.proto-players .muted {
+  font-size: 15px;
+  font-weight: 400;
+}
+.prog h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.prog-note {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+.prog-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line-2);
+}
+.prog-set {
+  flex: none;
+  width: 64px;
+  padding-top: 5px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.cells {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+.cells li {
+  width: 46px;
+  padding: 4px 0;
+  text-align: center;
+  font-family: var(--display);
+  font-size: 17px;
+  line-height: 1.2;
+  border: 1px solid var(--line);
+}
+.cells small {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.proto-note {
+  margin: 24px 0 0;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ncards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .sl {
+    min-height: 0;
+    padding: 28px 16px;
+  }
+  .sl h1 {
+    font-size: 30px;
+  }
+  .sl-page .sl {
+    padding: 28px 0;
+  }
+  .sl-empty {
+    font-size: 26px;
+  }
+  .facts {
+    gap: 14px 20px;
+    margin: 20px 0 22px;
+  }
+  .facts > div {
+    min-width: calc(50% - 10px);
+  }
+  .aside {
+    padding: 22px 16px;
+  }
+  .ncards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rt .medal {
+    width: auto;
+  }
+  .rt .av,
+  .rt .col-t {
+    display: none;
+  }
+  .t-phone {
+    display: inline;
+  }
+  .player-h h1 {
+    font-size: 30px;
+  }
+  .pg {
+    flex: 1 1 100%;
+  }
+  .pres li {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 10px 14px;
+  }
+  .pres .d,
+  .pres-m,
+  .pres-l {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .news-item h1 {
+    font-size: 26px;
+  }
+  .proto {
+    padding: 20px 16px;
+  }
+  .proto-h h1 {
+    font-size: 24px;
+  }
+  .pd div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .pd dt {
+    font-size: 14px;
+  }
+  .prog-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .prog-set {
+    width: auto;
+    padding-top: 0;
+  }
+}
+
+/* ---------- protocol print: one A4 sheet, black on white ---------- */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+  .top,
+  .site-foot,
+  .skip,
+  .proto-acts {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  /* The window-height page fills the sheet exactly; any slack would print a blank second sheet. */
+  #root {
+    min-height: 0;
+  }
+  main .proto-page {
+    max-width: none;
+    padding: 0;
+  }
+  .proto {
+    max-width: none;
+    border: 0;
+    padding: 0;
+    font-size: 11pt;
+    line-height: 1.35;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .proto * {
+    color: #000 !important;
+    background: none !important;
+    border-color: #000 !important;
+  }
+  .proto a {
+    text-decoration: none;
+    min-height: 0;
+  }
+  .proto-h {
+    padding-bottom: 3mm;
+    margin-bottom: 4mm;
+  }
+  .proto-h svg {
+    width: 12mm;
+    height: 15mm;
+    filter: grayscale(1);
+  }
+  .proto-h h1 {
+    font-size: 16pt;
+  }
+  .proto-org,
+  .proto-msg,
+  .prog h2,
+  .prog-note,
+  .prog-set,
+  .proto-players li,
+  .proto-players .muted,
+  .cells li,
+  .proto-note {
+    font-size: 11pt;
+  }
+  .proto-msg,
+  .prog h2,
+  .prog-note {
+    margin-bottom: 2mm;
+  }
+  .pd {
+    margin-bottom: 4mm;
+  }
+  .pd div {
+    grid-template-columns: 45mm minmax(0, 1fr);
+    gap: 3mm;
+    padding: 0.8mm 0;
+    border-bottom: 0.2mm solid #000;
+  }
+  .proto-players {
+    margin-bottom: 4mm;
+  }
+  .proto-players li {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .prog-row {
+    flex-direction: row;
+    gap: 3mm;
+    padding: 1.5mm 0;
+    border-top: 0.2mm solid #000;
+    break-inside: avoid;
+  }
+  .prog-set {
+    width: 16mm;
+    padding-top: 0.6mm;
+  }
+  .cells {
+    flex-wrap: nowrap;
+    gap: 0.6mm;
+  }
+  .cells li {
+    width: 11.4mm;
+    padding: 0.6mm 0;
+    border: 0.2mm solid #000;
+  }
+  .cells small {
+    font-size: 9pt;
+  }
+  .proto-note {
+    margin-top: 5mm;
+  }
+}
