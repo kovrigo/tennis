@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useApi } from "../../api.ts";
 import type { DivisionResults, MatchRow as Row, TournamentPage } from "../../api-types.ts";
-import { LeagueArt, leagueOf } from "../../components/League.tsx";
+import { LeagueFace, leagueOf } from "../../components/League.tsx";
 import { MatchRow } from "../../components/MatchRow.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { dayLong, weekday } from "../../format.ts";
@@ -133,7 +133,7 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
       <div className="res-h">
         {league && (
           <span className="res-av">
-            <LeagueArt league={league} />
+            <LeagueFace league={league} />
           </span>
         )}
         <h3 id={`division-${r.id}-h`}>{r.name}</h3>
@@ -143,8 +143,8 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
         <>
           <p className="note">Образец, не положение</p>
           {!r.anyPlacements && <Empty>Места ещё не отмечены</Empty>}
-          <div className="table-wrap">
-            <table className="data res-table">
+          <div className="table-wrap rk-panel">
+            <table className="data res-table rk-table">
               <thead>
                 <tr>
                   <th scope="col">Место</th>
@@ -153,8 +153,8 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
                 </tr>
               </thead>
               <tbody>
-                {r.rows.map((row) => (
-                  <tr key={row.id}>
+                {r.rows.map((row, i) => (
+                  <tr key={row.id} className={`rk-cells${i < 3 ? ` m${i + 1}` : ""}`}>
                     <td>{row.name}</td>
                     <td className="num pts">{row.points}</td>
                     <td>
@@ -180,9 +180,9 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
       ) : (
         <>
           {r.anyPlacements ? (
-            <ul className="places">
-              {r.places.map((p) => (
-                <li key={p.place}>
+            <ul className="places rk-panel">
+              {r.places.map((p, i) => (
+                <li key={p.place} className={`rk-row${i < 3 ? ` m${i + 1}` : ""}`}>
                   <b>{p.place}</b> — <PlayerLinks players={p.players} />
                 </li>
               ))}

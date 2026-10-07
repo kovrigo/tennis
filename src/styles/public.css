@@ -230,47 +230,210 @@
   right: -120px;
 }
 
-/* ---------- home: rating aside ---------- */
-/* Pale blue panel with streaks; each row is a small white card with a place colour on the left. */
-.aside {
+/* ---------- ranking ---------- */
+/* One look for every ranking: a pale blue panel with streaks; each place is a white pill row
+   with a thin place colour on a slanted left edge and two streaks behind the points.
+   Place colour: gold, blue, orange, then grey. The slant is a mask cut at 10°; the colour is
+   a band on the same angle, so the two stay parallel at any row height. */
+.rk-panel {
   position: relative;
-  background: linear-gradient(165deg, #f6f9ff 0%, #e4edfa 100%);
-  padding: 26px 24px;
-  min-width: 0;
+  background:
+    linear-gradient(
+        118deg,
+        transparent 0 34%,
+        rgba(255, 255, 255, 0.9) 34% 42%,
+        transparent 42% 49%,
+        rgba(47, 111, 203, 0.12) 49% 55%,
+        transparent 55% 61%,
+        rgba(47, 111, 203, 0.08) 61% 66%,
+        transparent 66%
+      )
+      right top / 230px 120px no-repeat,
+    linear-gradient(165deg, #f6f9ff 0%, #e3edfa 100%);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(18, 35, 63, 0.04), 0 14px 30px -18px rgba(30, 78, 154, 0.35);
 }
-.aside::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 140px;
-  height: 64px;
-  background: var(--streaks);
-  pointer-events: none;
+.rk-row,
+.rk-cells {
+  --rk: #aab6c8;
 }
-.aside > * {
+.rk-row:has(.m1),
+.rk-row.m1,
+.rk-cells:has(.m1),
+.rk-cells.m1 {
+  --rk: #f7b500;
+}
+.rk-row:has(.m2),
+.rk-row.m2,
+.rk-cells:has(.m2),
+.rk-cells.m2 {
+  --rk: #2f8cf0;
+}
+.rk-row:has(.m3),
+.rk-row.m3,
+.rk-cells:has(.m3),
+.rk-cells.m3 {
+  --rk: #f2711c;
+}
+.rk-row,
+.rk-cells > :first-child {
+  -webkit-mask-image: linear-gradient(100deg, transparent 12px, #000 12.5px);
+  mask-image: linear-gradient(100deg, transparent 12px, #000 12.5px);
+}
+.rk-row {
   position: relative;
+  background:
+    linear-gradient(100deg, transparent 12px, var(--rk) 12.5px 17.5px, transparent 18px),
+    var(--rk-streaks) right 54px center / 92px 100% no-repeat,
+    #fff;
+  border-radius: 14px;
 }
-.aside h2 {
+.rk-cells > * {
+  background-color: #fff;
+}
+.rk-cells > :first-child {
+  background-image: linear-gradient(100deg, transparent 12px, var(--rk) 12.5px 17.5px, transparent 18px);
+  border-radius: 14px 0 0 14px;
+}
+.rk-cells > :last-child {
+  background-image: var(--rk-streaks);
+  background-position: right 54px center;
+  background-size: 92px 100%;
+  background-repeat: no-repeat;
+  border-radius: 0 14px 14px 0;
+}
+.rk-cells:hover > * {
+  background-color: #f8fbff;
+}
+/* The rows' shadow: a mask would cut a box shadow, a filter on the list is drawn after it. */
+.rk-list,
+.rk-table {
+  filter: drop-shadow(0 6px 9px rgba(30, 78, 154, 0.11));
+}
+.rk-row .medal,
+.rk-cells .medal {
+  color: #7a889e;
+}
+.rk-row .m1,
+.rk-cells .m1 {
+  color: #c27c00;
+}
+.rk-row .m2,
+.rk-cells .m2 {
+  color: var(--ink-2);
+}
+.rk-row .m3,
+.rk-cells .m3 {
+  color: #d4580a;
+}
+/* Ranking tables: the same rows, built from cells; column labels above them. */
+.table-wrap.rk-panel {
+  border: 0;
+  padding: 6px 16px 8px;
+}
+table.data.rk-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  background: transparent;
+}
+table.data.rk-table th {
+  background: transparent;
+  border: 0;
+  padding: 10px 14px 0;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+table.data.rk-table td {
+  border: 0;
+  padding: 12px 14px;
+}
+table.data.rk-table th:first-child,
+table.data.rk-table td:first-child {
+  padding-left: 30px;
+}
+table.data.rk-table tbody tr:hover {
+  background: transparent;
+}
+/* Panel heading: spaced capitals, a fading bar and four hatches. */
+.rk-h {
   display: flex;
   align-items: center;
   gap: 14px;
   font-size: 15px;
   font-weight: 800;
-  letter-spacing: 2.4px;
+  letter-spacing: 2.6px;
   text-transform: uppercase;
   color: var(--navy);
-  margin-bottom: 16px;
+  margin: 0 0 16px;
 }
-.aside h2::after {
+.rk-h::after {
   content: "";
-  flex: 0 1 150px;
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #2f6fcb, rgba(47, 111, 203, 0));
+  flex: 0 1 190px;
+  height: 10px;
+  background:
+    linear-gradient(90deg, #2f6fcb, rgba(47, 111, 203, 0.25)) left center / calc(100% - 40px) 4px no-repeat,
+    var(--hatch) right center / 34px 10px no-repeat;
+}
+/* Note under a ranking with hatches at the right. */
+.rk-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.rk-note::after {
+  content: "";
+  flex: none;
+  width: 36px;
+  height: 10px;
+  margin-left: auto;
+  background: var(--hatch);
+}
+/* "Весь рейтинг": white with a navy outline, a chevron and streaks in the corner. */
+.btn.rk-all {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 54px;
+  gap: 18px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+        124deg,
+        transparent 0 40%,
+        rgba(47, 111, 203, 0.22) 40% 50%,
+        transparent 50% 57%,
+        rgba(47, 111, 203, 0.3) 57% 67%,
+        transparent 67% 74%,
+        rgba(47, 111, 203, 0.55) 74%
+      )
+      right bottom / 96px 100% no-repeat,
+    #fff;
+}
+.btn.rk-all:hover {
+  background-color: var(--blue-tint);
+  color: var(--navy);
+}
+.rk-all::after {
+  content: "";
+  width: 8px;
+  height: 13px;
+  background: url(../images/chev-navy.svg) center / contain no-repeat;
+}
+
+/* ---------- home: rating aside ---------- */
+.aside {
+  padding: 26px 24px;
+  min-width: 0;
 }
 .aside .pills {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .grp-one {
   font-weight: 700;
@@ -281,49 +444,26 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 .rk {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 9px 16px 9px 18px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 6px 16px -12px rgba(30, 78, 154, 0.55);
-  overflow: hidden;
-}
-/* Place colour: gold, blue, orange, then grey. */
-.rk::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 4px;
-  border-radius: 0 3px 3px 0;
-  background: #b6c2d3;
-}
-.rk:has(.m1)::before {
-  background: #f2c230;
-}
-.rk:has(.m2)::before {
-  background: #3f86e8;
-}
-.rk:has(.m3)::before {
-  background: var(--orange);
+  gap: 14px;
+  min-height: 66px;
+  padding: 8px 20px 8px 30px;
 }
 .rk .pos {
-  font-size: 22px;
+  font-size: 26px;
+  font-weight: 500;
   width: 22px;
   flex: none;
   text-align: center;
 }
 .rk .av {
-  width: 38px;
-  height: 38px;
-  font-size: 13px;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
 }
 .rk .who {
   display: flex;
@@ -333,6 +473,7 @@
 }
 .rk .nm {
   font-weight: 700;
+  font-size: 16px;
   overflow-wrap: anywhere;
 }
 /* The whole row is the link to the player. */
@@ -347,29 +488,10 @@
 .rk .pts {
   margin-left: auto;
   font-family: var(--display);
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 26px;
+  font-weight: 600;
   color: var(--navy);
   flex: none;
-}
-.rk-note {
-  margin: 12px 0 0;
-}
-.rk-all {
-  width: 100%;
-  margin-top: 16px;
-  min-height: 50px;
-  font-size: 16px;
-  gap: 12px;
-}
-.rk-all::after {
-  content: "";
-  width: 8px;
-  height: 13px;
-  background: url(../images/chev-navy.svg) center / contain no-repeat;
-}
-.rk-all:hover::after {
-  filter: invert(1) brightness(2);
 }
 .aside .empty {
   margin: 8px 0 0;
@@ -510,7 +632,7 @@
   grid-column: 2;
   font-size: 15px;
 }
-/* Round crop of the league picture: the image is enlarged and the face point moved to the centre. */
+/* Round face crop of the league picture. */
 .res-av {
   grid-row: 1 / span 2;
   position: relative;
@@ -523,21 +645,10 @@
   background: #173f86;
   box-shadow: 0 6px 14px -8px rgba(18, 35, 63, 0.6);
 }
-.res-av .league-art {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: auto;
-  max-width: none;
-  height: 360%;
-  transform: translate(-73%, -27%);
-}
-.res-av .youth {
-  height: 270%;
-  transform: translate(-73%, -29%);
-}
-.res-av .women {
-  transform: translate(-67%, -30%);
+.res-av .league-face {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .res-h h3 {
   font-size: 20px;
@@ -580,19 +691,19 @@
 .places {
   list-style: none;
   margin: 0;
-  padding: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
 }
 .places li {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line-2);
+  min-height: 56px;
+  padding: 14px 20px 14px 30px;
   overflow-wrap: anywhere;
 }
-.places li:last-child {
-  border-bottom: 0;
+.places b {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 600;
 }
 
 /* ---------- online score ---------- */
@@ -630,22 +741,12 @@
   width: min(72%, 760px);
   height: 100%;
   object-fit: cover;
-  object-position: 80% 30%;
+  object-position: 60% 28%;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40%);
   mask-image: linear-gradient(90deg, transparent 0, #000 40%);
 }
-.league-band.plain::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  right: -40px;
-  bottom: -90px;
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background:
-    url(../images/seam.svg) center / 100% 100% no-repeat,
-    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.08) 70%);
+.league-band.plain {
+  background: url(../images/footer-bg.webp) right center / cover no-repeat, #0d1f45;
 }
 .lb-name {
   font-family: var(--display);
@@ -758,19 +859,35 @@
     url(../images/seam.svg) center / 100% 100% no-repeat,
     radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12) 70%);
 }
-.pg-art .league-art {
+.pg-art .league-face {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 76% 40%;
 }
-.pg-art .league-art.youth {
-  object-position: 66% 40%;
+/* Place colour as in the rankings: a thin band on a 10° slant at the picture's right edge. */
+.pg {
+  --rk: #aab6c8;
 }
-.pg-art .league-art.women {
-  object-position: 70% 30%;
+.pg.m1 {
+  --rk: #f7b500;
+}
+.pg.m2 {
+  --rk: #2f8cf0;
+}
+.pg.m3 {
+  --rk: #f2711c;
+}
+.pg-art::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -4px;
+  bottom: -4px;
+  right: 0;
+  width: 18px;
+  background: linear-gradient(100deg, transparent 6px, var(--rk) 6.5px 11.5px, #fff 12px);
 }
 .pg-t {
   display: flex;
@@ -1099,10 +1216,6 @@
     -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
     mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
   }
-  .sl > .sl-art.youth,
-  .sl-page .sl > .sl-art.youth {
-    object-position: 76% 30%;
-  }
   .sl h1 {
     font-size: 34px;
   }
@@ -1139,7 +1252,46 @@
     min-width: calc(50% - 10px);
   }
   .aside {
-    padding: 22px 16px;
+    padding: 22px 14px;
+  }
+  .rk {
+    gap: 10px;
+    padding: 8px 14px 8px 26px;
+  }
+  .rk .av {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+  .rk .pts {
+    font-size: 24px;
+  }
+  .table-wrap.rk-panel {
+    padding: 2px 10px 4px;
+  }
+  table.data.rk-table th,
+  table.data.rk-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  /* A narrow last cell would cut the streaks with a hard edge. */
+  .rk-cells > :last-child {
+    background-image: none;
+  }
+  table.data.rk-table th {
+    font-size: 11px;
+    letter-spacing: 0.4px;
+  }
+  table.data.rk-table th:first-child,
+  table.data.rk-table td:first-child {
+    padding-left: 26px;
+    padding-right: 2px;
+  }
+  .places {
+    padding: 10px;
+  }
+  .places li {
+    padding: 12px 14px 12px 26px;
   }
   .ncards {
     grid-template-columns: minmax(0, 1fr);

@@ -1,6 +1,6 @@
 import { useApi } from "../../api.ts";
 import type { PlayerPage } from "../../api-types.ts";
-import { LeagueArt, leagueOf } from "../../components/League.tsx";
+import { LeagueFace, leagueOf } from "../../components/League.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { dateRange, points } from "../../format.ts";
 import { Link } from "../../router.tsx";
@@ -37,8 +37,8 @@ function PlayerView({ data }: { data: PlayerPage }) {
             {data.groups.map((g) => {
               const league = leagueOf(g.name);
               return (
-                <Link key={g.id} className="pg" to={`/rating?group=${g.id}`}>
-                  <span className="pg-art">{league && <LeagueArt league={league} />}</span>
+                <Link key={g.id} className={`pg${g.place <= 3 ? ` m${g.place}` : ""}`} to={`/rating?group=${g.id}`}>
+                  <span className="pg-art">{league && <LeagueFace league={league} />}</span>
                   <span className="pg-t">
                     <span className="pg-name">{g.name}</span>
                     <span className="pts-big num">{points(g.points)}</span>

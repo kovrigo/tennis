@@ -86,8 +86,10 @@ function HomeRating({ groups }: { groups: HomePage["rating"] }) {
   const [picked, setPicked] = useState<number | null>(null);
   const group = groups.find((g) => g.id === picked) ?? groups[0];
   return (
-    <aside className="aside" aria-labelledby="home-rating">
-      <h2 id="home-rating">Рейтинг</h2>
+    <aside className="aside rk-panel" aria-labelledby="home-rating">
+      <h2 id="home-rating" className="rk-h">
+        Рейтинг
+      </h2>
       {groups.length > 1 && (
         <div className="pills">
           {groups.map((g) => (
@@ -110,7 +112,7 @@ function HomeRating({ groups }: { groups: HomePage["rating"] }) {
         <>
           <ol className="rk-list">
             {group.rows.slice(0, 5).map((r) => (
-              <li key={r.player.id} className="rk">
+              <li key={r.player.id} className="rk rk-row">
                 <span className={`pos medal num${r.place <= 3 ? ` m${r.place}` : ""}`}>{r.place}</span>
                 <span className="av" aria-hidden="true">
                   {initials(r.player.name)}
@@ -125,7 +127,7 @@ function HomeRating({ groups }: { groups: HomePage["rating"] }) {
               </li>
             ))}
           </ol>
-          <p className="small muted rk-note">Простая сумма очков, не правило федерации</p>
+          <p className="rk-note">Простая сумма очков, не правило федерации</p>
         </>
       )}
       {group && (

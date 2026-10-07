@@ -48,8 +48,8 @@ function RatingView({ data }: { data: RatingPage }) {
           {data.rows.length === 0 ? (
             <Empty>В этой группе пока нет очков. Они появятся, когда организатор отметит места в турнире</Empty>
           ) : (
-            <div className="table-wrap">
-              <table className="data rt">
+            <div className="table-wrap rk-panel">
+              <table className="data rt rk-table">
                 <thead>
                   <tr>
                     <th scope="col">Место</th>
@@ -62,7 +62,7 @@ function RatingView({ data }: { data: RatingPage }) {
                 </thead>
                 <tbody>
                   {data.rows.map((r) => (
-                    <tr key={r.player.id}>
+                    <tr key={r.player.id} className="rk-cells">
                       <td className={`medal num${r.place <= 3 ? ` m${r.place}` : ""}`}>{r.place}</td>
                       <td>
                         <span className="pl-cell">
