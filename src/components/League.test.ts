@@ -15,6 +15,7 @@ describe("league from a division or rating group name", () => {
     ["Юноши до 15 лет", "boys"],
     ["Юниоры", "boys"],
     ["Дети до 10 лет", "boys"],
+    ["До\u00a018\u00a0лет", "boys"],
     ["Ветераны", null],
     ["Смешанный парный", null],
   ];

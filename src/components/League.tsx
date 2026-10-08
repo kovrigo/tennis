@@ -22,7 +22,7 @@ export function leagueOf(name: string): League | null {
   if (/женщ|женск/.test(s)) return "women";
   if (/мужч|мужск/.test(s)) return "men";
   if (/девуш|девоч|юниорк/.test(s)) return "girls";
-  if (/юнош|мальч|юниор|дет|до \d+ лет/.test(s)) return "boys";
+  if (/юнош|мальч|юниор|дет|до\s\d+\sлет/.test(s)) return "boys";
   return null;
 }
 
@@ -47,5 +47,5 @@ export function LeagueArt({ league, className = "" }: { league: League; classNam
 
 /** Decorative square crop of the same picture's face. */
 export function LeagueFace({ league }: { league: League }) {
-  return <img className="league-face" src={FACE[league]} alt="" aria-hidden="true" width={192} height={192} />;
+  return <img className="league-face" src={FACE[league]} alt="" aria-hidden="true" width={192} height={192} loading="lazy" decoding="async" />;
 }

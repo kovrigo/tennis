@@ -115,8 +115,9 @@
   max-width: none;
   height: 100%;
   transform: translateX(-60%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  /* The right fade hides the picture's end on screens wider than the picture reaches. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 24%, #000 94%, transparent 100%);
   pointer-events: none;
 }
 .sl.rtt:has(> .sl-art),
@@ -160,7 +161,7 @@
   line-height: 1.04;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  max-width: 16ch;
+  max-width: 18ch;
   overflow-wrap: anywhere;
   text-shadow: 0 2px 18px rgba(8, 20, 45, 0.35);
 }
@@ -266,7 +267,9 @@
 /* One look for every ranking: a pale blue panel with streaks; each place is a white pill row
    with a thin place colour on a slanted left edge and two streaks behind the points.
    Place colour: gold, blue, orange, then grey. The slant is a mask cut at 10°; the colour is
-   a band on the same angle, so the two stay parallel at any row height. */
+   a band on the same angle, so the two stay parallel. Both sit in a 1000px-tall layer pinned to
+   the row's bottom left corner (173.6px = 1000px × sin 10°): the slant starts at that corner,
+   so a tall wrapped row keeps its band from bottom to top. */
 .rk-panel {
   position: relative;
   background:
@@ -309,13 +312,14 @@
 }
 .rk-row,
 .rk-cells > :first-child {
-  -webkit-mask-image: linear-gradient(100deg, transparent 12px, #000 12.5px);
-  mask-image: linear-gradient(100deg, transparent 12px, #000 12.5px);
+  -webkit-mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
+  mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
 }
 .rk-row {
   position: relative;
   background:
-    linear-gradient(100deg, transparent 12px, var(--rk) 12.5px 17.5px, transparent 18px),
+    linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px) left bottom / 100% 1000px
+      no-repeat,
     var(--rk-streaks) right 54px center / 92px 100% no-repeat,
     #fff;
   border-radius: 14px;
@@ -324,7 +328,10 @@
   background-color: #fff;
 }
 .rk-cells > :first-child {
-  background-image: linear-gradient(100deg, transparent 12px, var(--rk) 12.5px 17.5px, transparent 18px);
+  background-image: linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px);
+  background-position: left bottom;
+  background-size: 100% 1000px;
+  background-repeat: no-repeat;
   border-radius: 14px 0 0 14px;
 }
 .rk-cells > :last-child {
@@ -935,8 +942,10 @@ table.data.rk-table tbody tr:hover {
   top: -4px;
   bottom: -4px;
   right: 0;
-  width: 18px;
-  background: linear-gradient(100deg, transparent 6px, var(--rk) 6.5px 11.5px, #fff 12px);
+  /* Pinned to the bottom like the ranking rows; 40px holds the slant over the card's height. */
+  width: 40px;
+  background: linear-gradient(100deg, transparent 179.6px, var(--rk) 180.1px 185.1px, #fff 185.6px) left bottom / 100%
+    1000px no-repeat;
 }
 .pg-t {
   display: flex;
@@ -989,6 +998,7 @@ table.data.rk-table tbody tr:hover {
 .pres .d {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   grid-row: span 2;
   align-self: stretch;
   display: flex;
@@ -1002,6 +1012,7 @@ table.data.rk-table tbody tr:hover {
 .pres .d::after {
   content: "";
   position: absolute;
+  z-index: -1;
   right: -10px;
   bottom: -40px;
   width: 100px;
@@ -1019,6 +1030,10 @@ table.data.rk-table tbody tr:hover {
   font-size: 18px;
   font-weight: 700;
   overflow-wrap: anywhere;
+}
+/* The card clips its corners; the ring goes inside the link. */
+.pres-t:focus-visible {
+  outline-offset: -3px;
 }
 .pres-t:hover {
   color: var(--blue);
@@ -1284,8 +1299,11 @@ table.data.rk-table tbody tr:hover {
       rgba(var(--sub), 0.84) 100%
     );
   }
+  /* The phone column is the limit: a 16-letter word such as «Профессиональный» fits whole
+     from 320px up. */
   .sl h1 {
-    font-size: 34px;
+    font-size: clamp(26px, 8.5vw, 34px);
+    max-width: none;
   }
   .sl-page .sl {
     min-height: 0;

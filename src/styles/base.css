@@ -57,11 +57,7 @@
   --surface: #ffffff;
   --orange: #f2711c;
   --amber: #ffc04d;
-  --coral: #ef5a4c;
   --done-bg: #edf1f7;
-  --gold: #8a6a10;
-  --silver: #6b7685;
-  --bronze: #8f5a2a;
   --r: 12px;
   --r-sm: 8px;
   --shadow: 0 1px 2px rgba(18, 35, 63, 0.05), 0 10px 28px -12px rgba(30, 78, 154, 0.28);
@@ -316,8 +312,9 @@ nav.main .end {
   font-size: 15px;
   text-align: center;
 }
+/* Starts darker than --grad-blue: white text keeps 4.5:1 at the light corner. */
 .btn-p {
-  background: var(--grad-blue);
+  background: linear-gradient(150deg, #3874d2 0%, #2f6fcb 45%, #1e4e9a 100%);
   color: #fff;
   box-shadow: 0 6px 16px -8px rgba(30, 78, 154, 0.7);
 }
@@ -326,6 +323,7 @@ nav.main .end {
 }
 .btn-p:disabled {
   background: var(--ink-3);
+  box-shadow: none;
 }
 .btn-o {
   border: 2px solid var(--navy);
@@ -884,6 +882,10 @@ main::after {
 .match .mf a:hover {
   color: var(--blue);
 }
+/* The card clips its corners; the ring goes inside the link. */
+.match .mf a:focus-visible {
+  outline-offset: -3px;
+}
 .match .mf a,
 .match .mf .time {
   white-space: nowrap;
@@ -952,15 +954,6 @@ table.data tbody tr:hover {
   font-family: var(--display);
   font-size: 22px;
   color: var(--ink-2);
-}
-.medal.m1 {
-  color: var(--gold);
-}
-.medal.m2 {
-  color: var(--silver);
-}
-.medal.m3 {
-  color: var(--bronze);
 }
 .pts-big {
   font-family: var(--display);
