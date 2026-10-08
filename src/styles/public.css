@@ -1470,6 +1470,13 @@ table.data.rk-table tbody tr:hover {
     padding-top: 0;
   }
 }
+/* Tablet: the facts wrap before the dark layer thins out at the player, so the long divisions
+   line never lies on the white shirt. */
+@media (min-width: 761px) and (max-width: 1180px) {
+  .sl:has(> .sl-art) .facts {
+    max-width: max(380px, calc(70vw - 200px));
+  }
+}
 
 /* ---------- protocol print: one A4 sheet, black on white ---------- */
 @media print {
