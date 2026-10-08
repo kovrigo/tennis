@@ -474,6 +474,10 @@ table.data.rk-table tbody tr:hover {
 .aside .pills {
   margin-bottom: 14px;
 }
+/* One line per tab: a wrapped tab grows taller and shifts the board. */
+.aside .pill {
+  white-space: nowrap;
+}
 .grp-one {
   font-weight: 700;
   margin: 0 0 8px;
@@ -484,6 +488,9 @@ table.data.rk-table tbody tr:hover {
   padding: 0;
   display: grid;
   gap: 10px;
+  /* Always five rows tall: fewer rows leave blank space below. */
+  min-height: calc(5 * 66px + 4 * 10px);
+  align-content: start;
 }
 .rk {
   display: flex;
