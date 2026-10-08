@@ -1,5 +1,5 @@
 import type { TournamentCard as Card, TournamentKind } from "../api-types.ts";
-import { dateRange } from "../format.ts";
+import { dateLines } from "../format.ts";
 import { Icon } from "../layout/icons.tsx";
 import { Link } from "../router.tsx";
 
@@ -15,12 +15,18 @@ export function TournamentCard({ t, withYear }: { t: Card; withYear?: boolean })
   return (
     <Link className={`tc ${t.kind}`} to={`/tournaments/${t.id}`}>
       <div className="tc-d">
-        <span className="d num">{dateRange(t.startDate, t.endDate, withYear)}</span>
+        <span className="d num">
+          {dateLines(t.startDate, t.endDate, withYear).map((line) => (
+            <span key={line} className={line.length > 5 ? "long" : undefined}>
+              {line}
+            </span>
+          ))}
+        </span>
       </div>
       <div className="tc-b">
         <div className="city">
           <Icon id="i-pin" size={16} />
-          {placeText(t)}
+          <span>{placeText(t)}</span>
         </div>
         <h3>{t.name}</h3>
         <div className="tags">

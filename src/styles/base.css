@@ -590,6 +590,8 @@ main::after {
   border-radius: var(--r);
   box-shadow: var(--shadow);
   overflow: hidden;
+  /* Every card is as tall as the fullest one: short cards get empty space above the divisions. */
+  min-height: 246px;
   transition:
     transform 0.15s,
     box-shadow 0.15s;
@@ -648,6 +650,14 @@ main::after {
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
+/* Days, month and year each on their own line. */
+.tc .d span {
+  display: block;
+}
+.tc .d span.long {
+  font-size: 0.68em;
+  white-space: nowrap;
+}
 .tc-b {
   position: relative;
   flex: 1;
@@ -655,6 +665,7 @@ main::after {
   display: flex;
   flex-direction: column;
   padding: 20px 22px 18px;
+  background: linear-gradient(100deg, #fff 55%, #eef4fd 100%);
 }
 .tc-b::before {
   content: "";
@@ -680,6 +691,13 @@ main::after {
   color: var(--ink-2);
   margin: 0 0 8px;
   padding-right: 40px;
+  min-width: 0;
+}
+.tc .city span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tc .city svg {
   flex: none;
@@ -690,6 +708,11 @@ main::after {
   font-weight: 700;
   margin-bottom: 12px;
   line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 .tc .tags {
   display: flex;
@@ -708,6 +731,10 @@ main::after {
   margin-top: auto;
   padding-top: 10px;
   border-top: 1px solid var(--line);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 /* ---------- match row ---------- */
@@ -1211,6 +1238,9 @@ table.data tbody tr:hover {
   }
   nav.main a svg {
     display: none;
+  }
+  .tc {
+    min-height: 233px;
   }
   .tc-d {
     width: 88px;
