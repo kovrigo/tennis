@@ -1491,6 +1491,13 @@ table.data.rk-table tbody tr:hover {
     padding-right: 2px;
   }
 }
+/* Home beside the rating, below 1440 px: the hero narrows and the player moves left, so the title
+   shrinks with the screen to stay clear of his face (60 px from 1440 px up, 48 px at 1081 px). */
+@media (min-width: 1081px) {
+  .hero .sl h1 {
+    font-size: clamp(48px, calc(7.2vw - 44px), 60px);
+  }
+}
 /* Tablet: the facts wrap before the dark layer thins out at the player, so the long divisions
    line never lies on the white shirt. */
 @media (min-width: 761px) and (max-width: 1180px) {
