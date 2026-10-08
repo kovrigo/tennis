@@ -1259,8 +1259,9 @@ table.data.rk-table tbody tr:hover {
   .sl {
     --face: clamp(560px, 70%, calc(100% - 60px));
   }
+  /* Below 870 px the player comes close to the title: it shrinks to stay clear of his face. */
   .sl h1 {
-    font-size: 48px;
+    font-size: clamp(40px, calc(7.2vw - 15px), 48px);
   }
   .ncards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
