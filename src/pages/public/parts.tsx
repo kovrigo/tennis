@@ -1,6 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import type { FileInfo, NewsCard as Card, PlayerFull, TournamentCard } from "../../api-types.ts";
-import { LeagueArt, firstLeague } from "../../components/League.tsx";
+import { LeagueArt, firstLeague, type League } from "../../components/League.tsx";
 import { KindTag, placeText } from "../../components/TournamentCard.tsx";
 import { dateRange, dayFull, fileKind, fileSize } from "../../format.ts";
 import { Link } from "../../router.tsx";
@@ -18,15 +18,18 @@ export function TournamentHead({
   t,
   withYear,
   finishedTag,
+  league: picked,
   children,
 }: {
   t: TournamentCard;
   withYear?: boolean;
   /** Tournament page: "Завершён" tag for a finished tournament. */
   finishedTag?: boolean;
+  /** Home: league of the picked rating group; else the first division's. */
+  league?: League | null;
   children: ReactNode;
 }) {
-  const league = firstLeague(t.divisions);
+  const league = picked ?? firstLeague(t.divisions);
   return (
     <div className={`sl ${t.kind}`}>
       {league && <LeagueArt league={league} className="sl-art" />}

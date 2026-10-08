@@ -4,6 +4,7 @@ import type { HomePage } from "../../api-types.ts";
 import { MatchRow } from "../../components/MatchRow.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { TournamentCard } from "../../components/TournamentCard.tsx";
+import { leagueOf } from "../../components/League.tsx";
 import { initials, points } from "../../format.ts";
 import { Link } from "../../router.tsx";
 import { useTitle } from "../../site.tsx";
@@ -18,11 +19,13 @@ export function Home(_props: { id?: string }) {
 
 function HomeView({ data }: { data: HomePage }) {
   const t = data.hero;
+  const [picked, setPicked] = useState<number | null>(null);
+  const group = data.rating.find((g) => g.id === picked) ?? data.rating[0];
   return (
     <>
       <div className="hero">
         {t ? (
-          <TournamentHead t={t}>
+          <TournamentHead t={t} league={group ? leagueOf(group.name) : null}>
             <Link className="btn btn-w" to={`/tournaments/${t.id}`}>
               Страница турнира
             </Link>
@@ -42,7 +45,7 @@ function HomeView({ data }: { data: HomePage }) {
             </div>
           </div>
         )}
-        <HomeRating groups={data.rating} />
+        <HomeRating groups={data.rating} group={group} onPick={setPicked} />
       </div>
 
       <LiveNow />
@@ -82,9 +85,17 @@ function HomeView({ data }: { data: HomePage }) {
   );
 }
 
-function HomeRating({ groups }: { groups: HomePage["rating"] }) {
-  const [picked, setPicked] = useState<number | null>(null);
-  const group = groups.find((g) => g.id === picked) ?? groups[0];
+type RatingGroup = HomePage["rating"][number];
+
+function HomeRating({
+  groups,
+  group,
+  onPick,
+}: {
+  groups: HomePage["rating"];
+  group: RatingGroup | undefined;
+  onPick: (id: number) => void;
+}) {
   return (
     <aside className="aside rk-panel" aria-labelledby="home-rating">
       <h2 id="home-rating" className="rk-h">
@@ -98,7 +109,7 @@ function HomeRating({ groups }: { groups: HomePage["rating"] }) {
               type="button"
               className="pill"
               aria-pressed={g.id === group?.id}
-              onClick={() => setPicked(g.id)}
+              onClick={() => onPick(g.id)}
             >
               {g.name}
             </button>
