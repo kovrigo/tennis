@@ -15,14 +15,16 @@ export type League = "men" | "boys" | "girls" | "women";
 const ART: Record<League, string> = { men, boys, girls, women };
 const FACE: Record<League, string> = { men: faceMen, boys: faceBoys, girls: faceGirls, women: faceWomen };
 
-/** "Женщины до 18 лет", "Женский парный" → women, "Мужской парный" → men, "Юниорки" → girls,
- *  "Юноши до 15 лет" → boys. Sex words win over age; a junior name without sex gets the boy. */
+/** "Женщины до 18 лет", "Женский парный" → women, "Мужской парный" → men, "Юниорки", "Кадетки" → girls,
+ *  "Юноши до 15 лет" → boys. Sex words win over age; a junior name without sex gets the boy, but
+ *  "до N лет" only up to 18: "Любители до 40 лет" gets no picture. */
 export function leagueOf(name: string): League | null {
   const s = name.toLowerCase();
   if (/женщ|женск/.test(s)) return "women";
   if (/мужч|мужск/.test(s)) return "men";
-  if (/девуш|девоч|юниорк/.test(s)) return "girls";
-  if (/юнош|мальч|юниор|дет|до\s\d+\sлет/.test(s)) return "boys";
+  if (/девуш|девоч|юниорк|кадетк/.test(s)) return "girls";
+  const age = /до\s(\d+)\sлет/.exec(s);
+  if (/юнош|мальч|юниор|дет/.test(s) || (age !== null && Number(age[1]) <= 18)) return "boys";
   return null;
 }
 
