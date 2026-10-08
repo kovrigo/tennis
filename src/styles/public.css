@@ -727,7 +727,8 @@ table.data.rk-table tbody tr:hover {
   padding: 10px 0 2px;
   border-bottom: 1px solid currentColor;
 }
-.places {
+/* ul only: the organizer's places form is a table.data.places */
+ul.places {
   list-style: none;
   margin: 0;
   padding: 16px;
@@ -1377,7 +1378,7 @@ table.data.rk-table tbody tr:hover {
     padding-left: 26px;
     padding-right: 2px;
   }
-  .places {
+  ul.places {
     padding: 10px;
   }
   .places li {
