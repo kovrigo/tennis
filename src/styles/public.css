@@ -1470,6 +1470,27 @@ table.data.rk-table tbody tr:hover {
     padding-top: 0;
   }
 }
+/* Narrow phone: the results table gives the players column room for whole surnames
+   («Медведев», «Сафонов») instead of breaking them inside the word. */
+@media (max-width: 400px) {
+  .table-wrap.rk-panel {
+    padding: 2px 6px 4px;
+  }
+  table.data.rk-table.res-table td {
+    font-size: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  table.data.rk-table.res-table th:nth-child(2),
+  table.data.rk-table.res-table td:nth-child(2) {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  table.data.rk-table.res-table td:first-child {
+    padding-left: 24px;
+    padding-right: 2px;
+  }
+}
 /* Tablet: the facts wrap before the dark layer thins out at the player, so the long divisions
    line never lies on the white shirt. */
 @media (min-width: 761px) and (max-width: 1180px) {
