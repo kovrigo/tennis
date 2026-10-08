@@ -83,7 +83,7 @@ export function MatchRow({ m, today, hideTournament, liveLink }: Props) {
     time = m.durationText;
   }
   return (
-    <article className="match">
+    <article className={running ? "match running" : "match"}>
       <div className="mh">
         <span className="where">{whereText(m)}</span>
         <span className="rnd">{title}</span>

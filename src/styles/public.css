@@ -1,6 +1,7 @@
 /* Public screens: home hero and rating, news cards, tournament page, online score,
    rating, player, news item and the match protocol with its print sheet.
-   Hero, rating rows and news cards are ported from the prototype. */
+   Hero, rating rows and news cards are ported from the prototype; the league
+   pictures (men, juniors, women) sit in the hero, the rating band, player cards and results. */
 
 /* ---------- shared ---------- */
 .go {
@@ -37,17 +38,16 @@
 /* ---------- big tournament block (home hero, tournament header) ---------- */
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 372px;
-  gap: 1px;
-  background: var(--line);
+  grid-template-columns: minmax(0, 1fr) 400px;
   border-bottom: 1px solid var(--line);
 }
 .sl {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   min-width: 0;
-  min-height: 452px;
-  padding: 48px 48px 40px;
+  min-height: 500px;
+  padding: 48px 48px 44px;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -60,27 +60,35 @@
 }
 .sl.rtt,
 .sl-page.rtt {
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    linear-gradient(135deg, #1e4e9a, #2f6fcb 55%, #12233f);
+  background: linear-gradient(120deg, #173f86 0%, #2a68c4 48%, #163a78 100%);
 }
 .sl.amateur,
 .sl-page.amateur {
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    linear-gradient(135deg, #8e1b14, #e23127 60%, #3a0e0a);
+  background: linear-gradient(120deg, #7f1913 0%, #d6372b 50%, #3f1430 100%);
 }
 .sl.none {
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 64px),
-    linear-gradient(135deg, #123a6b, #3e7fb8 55%, #0c1b30);
+  background: linear-gradient(120deg, #143a72 0%, #3a7dd0 55%, #0f2348 100%);
+}
+/* Streaks across the hero, then a ring on the right. */
+.sl::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    118deg,
+    transparent 0 30%,
+    rgba(255, 255, 255, 0.06) 30% 36%,
+    transparent 36% 41%,
+    rgba(255, 255, 255, 0.045) 41% 44%,
+    transparent 44%
+  );
+  pointer-events: none;
 }
 .sl::after {
   content: "";
   position: absolute;
+  z-index: -1;
   right: -70px;
   top: -50px;
   width: 360px;
@@ -92,64 +100,109 @@
   position: relative;
   z-index: 1;
 }
+/* League picture right of the title. Full hero height; "--face" is the face point (60 % across
+   every league picture), kept clear of the title and inside the hero. The picture runs under the
+   text; a translucent dark blue layer over it (".sl::after", below) keeps the text readable. */
+.sl {
+  --face: clamp(660px, 70%, calc(100% - 60px));
+}
+.sl > .sl-art {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: var(--face);
+  width: auto;
+  max-width: none;
+  height: 100%;
+  transform: translateX(-60%);
+  /* The right fade hides the picture's end on screens wider than the picture reaches. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 24%, #000 94%, transparent 100%);
+  pointer-events: none;
+}
+.sl.rtt:has(> .sl-art),
+.sl-page.rtt:has(.sl-art) {
+  background: linear-gradient(100deg, #0e2756 0%, #143a7c 48%, #1d52a6 100%);
+}
+.sl.amateur:has(> .sl-art),
+.sl-page.amateur:has(.sl-art) {
+  background: linear-gradient(100deg, #5a120e 0%, #8e1f18 48%, #3f1430 100%);
+}
+.sl.amateur > .sl-art {
+  /* Blue picture on a red hero: a warm tint keeps the two together. */
+  filter: saturate(0.85);
+  opacity: 0.92;
+}
 .sl .kicker {
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 .sl .dates {
   font-family: var(--display);
-  font-size: 16px;
+  font-size: 18px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  padding: 5px 12px;
+  background: rgba(10, 22, 44, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 6px;
+  padding: 5px 13px;
+}
+.sl .tag {
+  font-size: 13px;
+  padding: 5px 10px;
 }
 .sl h1 {
   font-family: var(--display);
   font-weight: 700;
-  font-size: 52px;
-  line-height: 1.05;
+  font-size: 60px;
+  line-height: 1.04;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   max-width: 18ch;
   overflow-wrap: anywhere;
+  text-shadow: 0 2px 18px rgba(8, 20, 45, 0.35);
 }
 .facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 36px;
-  margin: 26px 0 28px;
-  max-width: 640px;
+  gap: 16px 40px;
+  margin: 28px 0 30px;
+  max-width: 660px;
 }
 .facts > div {
-  border-top: 2px solid rgba(255, 255, 255, 0.35);
-  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  padding-top: 10px;
   min-width: 130px;
   max-width: 100%;
 }
 .facts dt {
   font-size: 12px;
-  letter-spacing: 1.3px;
+  letter-spacing: 1.4px;
   color: #fff;
   margin-bottom: 5px;
   text-transform: uppercase;
 }
 .facts dd {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.3;
   overflow-wrap: anywhere;
+  text-shadow: 0 1px 10px rgba(8, 20, 45, 0.4);
 }
 .sl .acts {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+}
+.sl .acts .btn {
+  min-height: 50px;
+  padding: 12px 24px;
+  font-size: 16px;
 }
 .sl-empty {
   font-family: var(--display);
@@ -165,68 +218,291 @@
   min-height: 44px;
   color: #fff;
 }
-/* Tournament page: the colour spans the page width, the content follows the page column. */
+/* Tournament page: the colour and picture span the page width, the content follows the page column. */
 .sl-page {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 .sl-page .sl {
+  position: static;
   background: none;
-  min-height: 0;
-  padding: 44px 0 40px;
+  min-height: 420px;
+  padding: 48px 0 44px;
   overflow: visible;
+}
+.sl-page .sl::before {
+  z-index: -1;
 }
 .sl-page .sl::after {
   right: -120px;
 }
+/* The dark blue layer over the picture: same box and fade as the picture, dense under the text,
+   clear at the face. Replaces the ring. */
+.sl:has(> .sl-art)::after {
+  z-index: 0;
+  top: 0;
+  right: auto;
+  left: var(--face);
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1560 / 650;
+  transform: translateX(-60%);
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--sub), 0.86) 0,
+    rgba(var(--sub), 0.82) 42%,
+    rgba(var(--sub), 0.7) 49%,
+    rgba(var(--sub), 0.3) 54%,
+    rgba(var(--sub), 0) 58%
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  pointer-events: none;
+}
+
+/* ---------- ranking ---------- */
+/* One look for every ranking: a pale blue panel with streaks; each place is a white pill row
+   with a thin place colour on a slanted left edge and two streaks behind the points.
+   Place colour: gold, blue, orange, then grey. The slant is a mask cut at 10°; the colour is
+   a band on the same angle, so the two stay parallel. Both sit in a 1000px-tall layer pinned to
+   the row's bottom left corner (173.6px = 1000px × sin 10°): the slant starts at that corner,
+   so a tall wrapped row keeps its band from bottom to top. */
+.rk-panel {
+  position: relative;
+  background:
+    linear-gradient(
+        118deg,
+        transparent 0 34%,
+        rgba(255, 255, 255, 0.9) 34% 42%,
+        transparent 42% 49%,
+        rgba(47, 111, 203, 0.12) 49% 55%,
+        transparent 55% 61%,
+        rgba(47, 111, 203, 0.08) 61% 66%,
+        transparent 66%
+      )
+      right top / 230px 120px no-repeat,
+    linear-gradient(165deg, #f6f9ff 0%, #e3edfa 100%);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(18, 35, 63, 0.04), 0 14px 30px -18px rgba(30, 78, 154, 0.35);
+}
+.rk-row,
+.rk-cells {
+  --rk: #aab6c8;
+}
+.rk-row:has(.m1),
+.rk-row.m1,
+.rk-cells:has(.m1),
+.rk-cells.m1 {
+  --rk: #f7b500;
+}
+.rk-row:has(.m2),
+.rk-row.m2,
+.rk-cells:has(.m2),
+.rk-cells.m2 {
+  --rk: #2f8cf0;
+}
+.rk-row:has(.m3),
+.rk-row.m3,
+.rk-cells:has(.m3),
+.rk-cells.m3 {
+  --rk: #f2711c;
+}
+.rk-row,
+.rk-cells > :first-child {
+  -webkit-mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
+  mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
+}
+.rk-row {
+  position: relative;
+  background:
+    linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px) left bottom / 100% 1000px
+      no-repeat,
+    var(--rk-streaks) right 54px center / 92px 100% no-repeat,
+    #fff;
+  border-radius: 14px;
+}
+.rk-cells > * {
+  background-color: #fff;
+}
+.rk-cells > :first-child {
+  background-image: linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px);
+  background-position: left bottom;
+  background-size: 100% 1000px;
+  background-repeat: no-repeat;
+  border-radius: 14px 0 0 14px;
+}
+.rk-cells > :last-child {
+  background-image: var(--rk-streaks);
+  background-position: right 54px center;
+  background-size: 92px 100%;
+  background-repeat: no-repeat;
+  border-radius: 0 14px 14px 0;
+}
+.rk-cells:hover > * {
+  background-color: #f8fbff;
+}
+/* The rows' shadow: a mask would cut a box shadow, a filter on the list is drawn after it. */
+.rk-list,
+.rk-table {
+  filter: drop-shadow(0 6px 9px rgba(30, 78, 154, 0.11));
+}
+.rk-row .medal,
+.rk-cells .medal {
+  color: #66748a;
+}
+.rk-row .m1,
+.rk-cells .m1 {
+  color: #9a6700;
+}
+.rk-row .m2,
+.rk-cells .m2 {
+  color: var(--ink-2);
+}
+.rk-row .m3,
+.rk-cells .m3 {
+  color: #b84a08;
+}
+/* Ranking tables: the same rows, built from cells; column labels above them. */
+.table-wrap.rk-panel {
+  border: 0;
+  padding: 6px 16px 8px;
+}
+table.data.rk-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  background: transparent;
+}
+table.data.rk-table th {
+  background: transparent;
+  border: 0;
+  padding: 10px 14px 0;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+table.data.rk-table td {
+  border: 0;
+  padding: 12px 14px;
+}
+table.data.rk-table th:first-child,
+table.data.rk-table td:first-child {
+  padding-left: 30px;
+}
+table.data.rk-table tbody tr:hover {
+  background: transparent;
+}
+/* Panel heading: spaced capitals, a fading bar and four hatches. */
+.rk-h {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin: 0 0 16px;
+}
+.rk-h::after {
+  content: "";
+  flex: 0 1 190px;
+  height: 10px;
+  background:
+    linear-gradient(90deg, #2f6fcb, rgba(47, 111, 203, 0.25)) left center / calc(100% - 40px) 4px no-repeat,
+    var(--hatch) right center / 34px 10px no-repeat;
+}
+/* Note under a ranking with hatches at the right. */
+.rk-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.rk-note::after {
+  content: "";
+  flex: none;
+  width: 36px;
+  height: 10px;
+  margin-left: auto;
+  background: var(--hatch);
+}
+/* "Весь рейтинг": white with a navy outline, a chevron and streaks in the corner. */
+.btn.rk-all {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 54px;
+  gap: 18px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+        124deg,
+        transparent 0 40%,
+        rgba(47, 111, 203, 0.22) 40% 50%,
+        transparent 50% 57%,
+        rgba(47, 111, 203, 0.3) 57% 67%,
+        transparent 67% 74%,
+        rgba(47, 111, 203, 0.55) 74%
+      )
+      right bottom / 96px 100% no-repeat,
+    #fff;
+}
+.btn.rk-all:hover {
+  background-color: var(--blue-tint);
+  color: var(--navy);
+}
+.rk-all::after {
+  content: "";
+  width: 8px;
+  height: 13px;
+  background: url(../images/chev-navy.svg) center / contain no-repeat;
+}
 
 /* ---------- home: rating aside ---------- */
 .aside {
-  background: var(--surface);
-  padding: 26px;
+  padding: 26px 24px;
   min-width: 0;
 }
-.aside h2 {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  margin-bottom: 14px;
-}
 .aside .pills {
-  margin-bottom: 6px;
+  margin-bottom: 14px;
 }
 .grp-one {
   font-weight: 700;
-  margin: 0 0 4px;
+  margin: 0 0 8px;
 }
 .rk-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: 10px;
 }
 .rk {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-}
-.rk:last-child {
-  border-bottom: 0;
+  gap: 14px;
+  min-height: 66px;
+  padding: 8px 20px 8px 30px;
 }
 .rk .pos {
-  font-size: 20px;
-  width: 24px;
+  font-size: 26px;
+  font-weight: 500;
+  width: 22px;
   flex: none;
   text-align: center;
 }
 .rk .av {
-  width: 38px;
-  height: 38px;
-  font-size: 13px;
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
 }
 .rk .who {
   display: flex;
@@ -235,7 +511,8 @@
   line-height: 1.3;
 }
 .rk .nm {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
   overflow-wrap: anywhere;
 }
 /* The whole row is the link to the player. */
@@ -250,49 +527,100 @@
 .rk .pts {
   margin-left: auto;
   font-family: var(--display);
-  font-size: 19px;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--navy);
   flex: none;
-}
-.rk-note {
-  margin: 12px 0 0;
-}
-.rk-all {
-  width: 100%;
-  margin-top: 16px;
 }
 .aside .empty {
   margin: 8px 0 0;
 }
 
 /* ---------- news cards ---------- */
+/* Streaks top right, a ball bottom right; every second card of three is coral. */
 .ncards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 22px;
 }
 .nc {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(115deg, #fff 55%, #eef4fd 100%);
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 26px 26px 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+.nc::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 6px;
+  width: 110px;
+  height: 80px;
+  background: var(--streaks);
+}
+.nc::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -22px;
+  bottom: -34px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, #d7e7fd 0, #8cb8f2 50%, #3f86e8 100%);
+  opacity: 0.8;
+}
+.ncards > .nc:nth-child(3n + 2) {
+  background: linear-gradient(115deg, #fff 55%, #fff0ed 100%);
+}
+.ncards > .nc:nth-child(3n + 2)::before {
+  background: var(--streaks-red);
+}
+.ncards > .nc:nth-child(3n + 2)::after {
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, #ffe0d9 0, #ff9a86 50%, #ef5a4c 100%);
 }
 .nc:hover {
-  border-color: var(--blue);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px rgba(18, 35, 63, 0.05),
+    0 16px 32px -14px rgba(30, 78, 154, 0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nc {
+    transition: none;
+  }
+  .nc:hover {
+    transform: none;
+  }
 }
 .nc .dt {
   font-family: var(--display);
-  font-size: 16px;
+  font-size: 18px;
   color: var(--red);
   letter-spacing: 0.3px;
 }
 .nc h2,
 .nc h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1.3;
+  padding-right: 48px;
   overflow-wrap: anywhere;
 }
 .nc .ex {
@@ -306,9 +634,12 @@
 }
 .nc .rd {
   margin-top: auto;
-  font-weight: 600;
-  font-size: 15px;
+  padding: 6px 18px 0 0;
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: 16px;
   color: var(--blue);
+  background: url(../images/chev.svg) right calc(50% + 3px) / 8px 13px no-repeat;
 }
 
 /* ---------- tournament page ---------- */
@@ -326,9 +657,37 @@
 .res-h {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 4px 14px;
   margin-bottom: 14px;
+}
+/* With a picture: picture on the left, name and rating group stacked beside it. */
+.res-h:has(.res-av) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 14px;
+}
+.res-h:has(.res-av) > .muted {
+  grid-column: 2;
+  font-size: 15px;
+}
+/* Round face crop of the league picture. */
+.res-av {
+  grid-row: 1 / span 2;
+  position: relative;
+  width: 54px;
+  height: 54px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #173f86;
+  box-shadow: 0 6px 14px -8px rgba(18, 35, 63, 0.6);
+}
+.res-av .league-face {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .res-h h3 {
   font-size: 20px;
@@ -368,20 +727,23 @@
   padding: 10px 0 2px;
   border-bottom: 1px solid currentColor;
 }
-.places {
+/* ul only: the organizer's places form is a table.data.places */
+ul.places {
   list-style: none;
   margin: 0;
-  padding: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
 }
 .places li {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line-2);
+  min-height: 56px;
+  padding: 14px 20px 14px 30px;
   overflow-wrap: anywhere;
 }
-.places li:last-child {
-  border-bottom: 0;
+.places b {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 600;
 }
 
 /* ---------- online score ---------- */
@@ -396,6 +758,64 @@
 }
 
 /* ---------- rating ---------- */
+/* Band with the picked group's name and its league picture. */
+.league-band {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 150px;
+  margin-bottom: 20px;
+  padding: 24px 32px;
+  border-radius: var(--r);
+  background: linear-gradient(120deg, #173f86 0%, #2a68c4 60%, #163a78 100%);
+  box-shadow: var(--shadow);
+  color: #fff;
+}
+.league-band .league-art {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: min(100%, 1000px);
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 28%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18%);
+}
+/* Translucent dark blue layer over the picture under the group name, clear at the face. */
+.league-band::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--sub), 0.84) 0,
+    rgba(var(--sub), 0.7) 30%,
+    rgba(var(--sub), 0.3) 50%,
+    rgba(var(--sub), 0) 62%
+  );
+}
+.league-band.plain {
+  background: url(../images/footer-bg.webp) right center / cover no-repeat, #0d1f45;
+}
+.league-band.plain::after {
+  background: linear-gradient(90deg, rgba(var(--sub), 0.8) 0, rgba(var(--sub), 0.5) 45%, rgba(var(--sub), 0.25) 100%);
+}
+.lb-name {
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  max-width: 60%;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 14px rgba(8, 20, 45, 0.45);
+}
 .rt .medal {
   width: 76px;
 }
@@ -436,84 +856,203 @@
 
 /* ---------- player ---------- */
 .player-h h1 {
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.8px;
   overflow-wrap: anywhere;
 }
 .player-h p {
-  font-size: 18px;
+  font-size: 19px;
   margin: 8px 0 0;
 }
 .pgroups {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 }
+/* Points card: league picture or a blue panel with a ball on the left. */
 .pg {
-  flex: 0 1 260px;
+  position: relative;
+  flex: 0 1 420px;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--blue);
-  padding: 16px 18px;
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.pg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 12px;
+  width: 90px;
+  height: 64px;
+  background: var(--streaks);
+  pointer-events: none;
 }
 .pg:hover {
-  background: #fbfcfe;
+  box-shadow:
+    0 1px 2px rgba(18, 35, 63, 0.05),
+    0 16px 32px -14px rgba(30, 78, 154, 0.4);
+}
+.pg-art {
+  position: relative;
+  flex: none;
+  width: 124px;
+  overflow: hidden;
+  background: var(--grad-blue);
+}
+.pg-art:empty::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  bottom: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12) 70%);
+}
+.pg-art .league-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Place colour as in the rankings: a thin band on a 10° slant at the picture's right edge. */
+.pg {
+  --rk: #aab6c8;
+}
+.pg.m1 {
+  --rk: #f7b500;
+}
+.pg.m2 {
+  --rk: #2f8cf0;
+}
+.pg.m3 {
+  --rk: #f2711c;
+}
+.pg-art::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -4px;
+  bottom: -4px;
+  right: 0;
+  /* Pinned to the bottom like the ranking rows; 40px holds the slant over the card's height. */
+  width: 40px;
+  background: linear-gradient(100deg, transparent 179.6px, var(--rk) 180.1px 185.1px, #fff 185.6px) left bottom / 100%
+    1000px no-repeat;
+}
+.pg-t {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 18px 24px 18px 26px;
 }
 .pg-name {
   font-weight: 700;
   color: var(--blue);
   overflow-wrap: anywhere;
 }
+.pg .pts-big {
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.1;
+}
 .pres {
   list-style: none;
   margin: 0;
   padding: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-}
-.pres li {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr) auto;
-  gap: 2px 20px;
-  align-items: center;
-  padding: 10px 18px;
-  border-bottom: 1px solid var(--line-2);
+  gap: 14px;
 }
-.pres li:last-child {
-  border-bottom: 0;
+/* Result card: date on a blue panel with a ball, links on the right. */
+.pres li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  gap: 0 26px;
+  align-items: center;
+  padding-right: 24px;
+  background: var(--surface);
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.pres li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 12px;
+  width: 90px;
+  height: 56px;
+  background: var(--streaks);
+  pointer-events: none;
 }
 .pres .d {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   grid-row: span 2;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: 18px 24px;
   font-family: var(--display);
-  font-size: 17px;
-  color: var(--red);
+  font-size: 24px;
+  color: #fff;
+  background: var(--grad-blue);
+}
+.pres .d::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -10px;
+  bottom: -40px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1) 70%);
 }
 .pres-t {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   min-height: 44px;
+  padding-top: 12px;
+  font-size: 18px;
   font-weight: 700;
   overflow-wrap: anywhere;
+}
+/* The card clips its corners; the ring goes inside the link. */
+.pres-t:focus-visible {
+  outline-offset: -3px;
 }
 .pres-t:hover {
   color: var(--blue);
 }
 .pres-m {
   grid-column: 2;
+  padding: 2px 0 16px;
   color: var(--ink-2);
   overflow-wrap: anywhere;
 }
 .pres-l {
+  position: relative;
+  z-index: 1;
   grid-column: 3;
   grid-row: 1 / span 2;
   display: flex;
   flex-wrap: wrap;
-  gap: 0 18px;
+  gap: 0 22px;
 }
 .pres-l a {
   display: inline-flex;
@@ -522,7 +1061,8 @@
   color: var(--blue);
   font-weight: 600;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
 }
 
 /* ---------- news item ---------- */
@@ -533,7 +1073,7 @@
   margin-bottom: 8px;
 }
 .news-item h1 {
-  font-size: 34px;
+  font-size: 40px;
   font-weight: 800;
   letter-spacing: -0.4px;
   max-width: 36ch;
@@ -541,9 +1081,16 @@
   overflow-wrap: anywhere;
 }
 .news-body {
-  max-width: 68ch;
-  line-height: 1.6;
+  max-width: 72ch;
+  line-height: 1.65;
+  font-size: 17px;
   overflow-wrap: anywhere;
+  background: var(--surface);
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 28px 32px 14px;
+  margin-bottom: 16px;
 }
 .news-body p {
   margin: 0 0 16px;
@@ -566,6 +1113,8 @@
 .proto {
   background: var(--surface);
   border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
   padding: 32px 36px;
   max-width: 880px;
 }
@@ -689,6 +1238,8 @@
   font-size: 17px;
   line-height: 1.2;
   border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fbff;
 }
 .cells small {
   display: block;
@@ -706,6 +1257,13 @@
   .hero {
     grid-template-columns: minmax(0, 1fr);
   }
+  .sl {
+    --face: clamp(560px, 70%, calc(100% - 60px));
+  }
+  /* Below 870 px the player comes close to the title: it shrinks to stay clear of his face. */
+  .sl h1 {
+    font-size: clamp(40px, calc(7.2vw - 15px), 48px);
+  }
   .ncards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -715,11 +1273,64 @@
     min-height: 0;
     padding: 28px 16px;
   }
+  /* Phone: the picture is a band above the text, fading down into the hero colour. */
+  .sl:has(> .sl-art) {
+    padding-top: 190px;
+  }
+  .sl > .sl-art,
+  .sl:has(> .sl-art)::after {
+    left: 0;
+    width: 100%;
+    height: 300px;
+    aspect-ratio: auto;
+    transform: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+  }
+  .sl > .sl-art {
+    object-fit: cover;
+    object-position: 82% 30%;
+  }
+  /* Phone: the text starts low on the picture, so the layer darkens downwards. */
+  .sl:has(> .sl-art)::after {
+    background: linear-gradient(
+      180deg,
+      rgba(var(--sub), 0) 0,
+      rgba(var(--sub), 0.18) 40%,
+      rgba(var(--sub), 0.72) 64%,
+      rgba(var(--sub), 0.84) 100%
+    );
+  }
+  /* The phone column is the limit: a 16-letter word such as «Профессиональный» fits whole
+     from 320px up. */
   .sl h1 {
-    font-size: 30px;
+    font-size: clamp(26px, 8.5vw, 34px);
+    max-width: none;
   }
   .sl-page .sl {
+    min-height: 0;
     padding: 28px 0;
+  }
+  .sl-page .sl:has(> .sl-art) {
+    padding-top: 190px;
+  }
+  .sl .acts .btn {
+    min-height: 46px;
+    padding: 10px 18px;
+    font-size: 15px;
+  }
+  .league-band {
+    min-height: 112px;
+    padding: 18px 20px;
+  }
+  /* Phone: picture by height, player at the right, clear of the group name. */
+  .league-band .league-art {
+    right: -30px;
+    width: auto;
+    max-width: none;
+  }
+  .lb-name {
+    font-size: 26px;
   }
   .sl-empty {
     font-size: 26px;
@@ -732,7 +1343,46 @@
     min-width: calc(50% - 10px);
   }
   .aside {
-    padding: 22px 16px;
+    padding: 22px 14px;
+  }
+  .rk {
+    gap: 10px;
+    padding: 8px 14px 8px 26px;
+  }
+  .rk .av {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+  .rk .pts {
+    font-size: 24px;
+  }
+  .table-wrap.rk-panel {
+    padding: 2px 10px 4px;
+  }
+  table.data.rk-table th,
+  table.data.rk-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  /* A narrow last cell would cut the streaks with a hard edge. */
+  .rk-cells > :last-child {
+    background-image: none;
+  }
+  table.data.rk-table th {
+    font-size: 11px;
+    letter-spacing: 0.4px;
+  }
+  table.data.rk-table th:first-child,
+  table.data.rk-table td:first-child {
+    padding-left: 26px;
+    padding-right: 2px;
+  }
+  ul.places {
+    padding: 10px;
+  }
+  .places li {
+    padding: 12px 14px 12px 26px;
   }
   .ncards {
     grid-template-columns: minmax(0, 1fr);
@@ -748,14 +1398,23 @@
     display: inline;
   }
   .player-h h1 {
-    font-size: 30px;
+    font-size: 32px;
   }
   .pg {
     flex: 1 1 100%;
   }
+  .pg-art {
+    width: 100px;
+  }
+  .pg-t {
+    padding: 14px 16px 14px 18px;
+  }
+  .pg .pts-big {
+    font-size: 38px;
+  }
   .pres li {
     grid-template-columns: minmax(0, 1fr);
-    padding: 10px 14px;
+    padding: 0 0 6px;
   }
   .pres .d,
   .pres-m,
@@ -763,8 +1422,33 @@
     grid-column: auto;
     grid-row: auto;
   }
+  .pres .d {
+    padding: 10px 16px;
+    font-size: 20px;
+  }
+  .pres .d::after {
+    width: 70px;
+    height: 70px;
+    bottom: -30px;
+  }
+  .pres-t,
+  .pres-m,
+  .pres-l {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .pres-m {
+    padding-bottom: 0;
+  }
+  .pres-t {
+    padding-top: 6px;
+  }
   .news-item h1 {
-    font-size: 26px;
+    font-size: 28px;
+  }
+  .news-body {
+    font-size: 16px;
+    padding: 20px 18px 6px;
   }
   .proto {
     padding: 20px 16px;
@@ -788,6 +1472,41 @@
     padding-top: 0;
   }
 }
+/* Narrow phone: the results table gives the players column room for whole surnames
+   («Медведев», «Сафонов») instead of breaking them inside the word. */
+@media (max-width: 400px) {
+  .table-wrap.rk-panel {
+    padding: 2px 6px 4px;
+  }
+  table.data.rk-table.res-table td {
+    font-size: 14px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  table.data.rk-table.res-table th:nth-child(2),
+  table.data.rk-table.res-table td:nth-child(2) {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  table.data.rk-table.res-table td:first-child {
+    padding-left: 24px;
+    padding-right: 2px;
+  }
+}
+/* Home beside the rating, below 1440 px: the hero narrows and the player moves left, so the title
+   shrinks with the screen to stay clear of his face (60 px from 1440 px up, 48 px at 1081 px). */
+@media (min-width: 1081px) {
+  .hero .sl h1 {
+    font-size: clamp(48px, calc(7.2vw - 44px), 60px);
+  }
+}
+/* Tablet: the facts wrap before the dark layer thins out at the player, so the long divisions
+   line never lies on the white shirt. */
+@media (min-width: 761px) and (max-width: 1180px) {
+  .sl:has(> .sl-art) .facts {
+    max-width: max(380px, calc(70vw - 200px));
+  }
+}
 
 /* ---------- protocol print: one A4 sheet, black on white ---------- */
 @media print {
@@ -798,7 +1517,9 @@
   .top,
   .site-foot,
   .skip,
-  .proto-acts {
+  .proto-acts,
+  main::before,
+  main::after {
     display: none !important;
   }
   html,
@@ -817,6 +1538,8 @@
   .proto {
     max-width: none;
     border: 0;
+    border-radius: 0;
+    box-shadow: none;
     padding: 0;
     font-size: 11pt;
     line-height: 1.35;
@@ -895,6 +1618,7 @@
     width: 11.4mm;
     padding: 0.6mm 0;
     border: 0.2mm solid #000;
+    border-radius: 0;
   }
   .cells small {
     font-size: 9pt;

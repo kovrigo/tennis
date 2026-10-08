@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useApi } from "../../api.ts";
 import type { DivisionResults, MatchRow as Row, TournamentPage } from "../../api-types.ts";
+import { LeagueFace, leagueOf } from "../../components/League.tsx";
 import { MatchRow } from "../../components/MatchRow.tsx";
 import { Empty, PageData } from "../../components/states.tsx";
 import { dayLong, weekday } from "../../format.ts";
+import { placeClass } from "../../place.ts";
 import { Link, navigate, useLocation } from "../../router.tsx";
 import { useTitle } from "../../site.tsx";
 import { PlayerLinks, TournamentHead, fileHref, regulationText } from "./parts.tsx";
@@ -126,9 +128,15 @@ function TournamentView({ data }: { data: TournamentPage }) {
 }
 
 function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"] }) {
+  const league = leagueOf(r.name);
   return (
     <section className="res" id={`division-${r.id}`} aria-labelledby={`division-${r.id}-h`}>
       <div className="res-h">
+        {league && (
+          <span className="res-av">
+            <LeagueFace league={league} />
+          </span>
+        )}
         <h3 id={`division-${r.id}-h`}>{r.name}</h3>
         {r.groupName && <span className="muted">Рейтинг · {r.groupName}</span>}
       </div>
@@ -136,8 +144,8 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
         <>
           <p className="note">Образец, не положение</p>
           {!r.anyPlacements && <Empty>Места ещё не отмечены</Empty>}
-          <div className="table-wrap">
-            <table className="data res-table">
+          <div className="table-wrap rk-panel">
+            <table className="data res-table rk-table">
               <thead>
                 <tr>
                   <th scope="col">Место</th>
@@ -147,7 +155,7 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
               </thead>
               <tbody>
                 {r.rows.map((row) => (
-                  <tr key={row.id}>
+                  <tr key={row.id} className={`rk-cells${placeClass(row.name, row.players.length > 0)}`}>
                     <td>{row.name}</td>
                     <td className="num pts">{row.points}</td>
                     <td>
@@ -173,9 +181,9 @@ function Results({ r, t }: { r: DivisionResults; t: TournamentPage["tournament"]
       ) : (
         <>
           {r.anyPlacements ? (
-            <ul className="places">
+            <ul className="places rk-panel">
               {r.places.map((p) => (
-                <li key={p.place}>
+                <li key={p.place} className={`rk-row${placeClass(p.place, true)}`}>
                   <b>{p.place}</b> — <PlayerLinks players={p.players} />
                 </li>
               ))}

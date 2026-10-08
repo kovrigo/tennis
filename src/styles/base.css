@@ -1,6 +1,8 @@
 /* Look of the attached prototype, with the design's readability changes:
    16px body text, #5A6B84 for captions (#8A99B0 only for lines and icons),
-   darker red on the amateur tag and darker medal colours. */
+   darker red on the amateur tag and darker medal colours.
+   Second look: light blue page, white rounded cards with blue streaks and a tennis ball
+   in the corner, blue gradients, coral and orange accents, navy footer. */
 
 @font-face {
   font-family: Onest;
@@ -51,13 +53,46 @@
   --ink-3: #8a99b0;
   --line: #dee5f0;
   --line-2: #eef2f8;
-  --bg: #f3f6fb;
+  --bg: #f1f5fc;
   --surface: #ffffff;
+  --orange: #f2711c;
+  --amber: #ffc04d;
   --done-bg: #edf1f7;
-  --gold: #8a6a10;
-  --silver: #6b7685;
-  --bronze: #8f5a2a;
-  --r: 4px;
+  --r: 12px;
+  --r-sm: 8px;
+  --shadow: 0 1px 2px rgba(18, 35, 63, 0.05), 0 10px 28px -12px rgba(30, 78, 154, 0.28);
+  --grad-blue: linear-gradient(150deg, #4a8ff0 0%, #2f6fcb 45%, #1e4e9a 100%);
+  --grad-red: linear-gradient(150deg, #f26a5c 0%, #d8392d 50%, #a8231b 100%);
+  --grad-orange: linear-gradient(180deg, #ffb13c 0%, #f2711c 100%);
+  /* Two thin diagonal streaks for a card corner. */
+  --streaks: linear-gradient(
+    116deg,
+    transparent 0 34%,
+    rgba(47, 111, 203, 0.2) 34% 44%,
+    transparent 44% 54%,
+    rgba(47, 111, 203, 0.13) 54% 64%,
+    transparent 64%
+  );
+  --streaks-red: linear-gradient(
+    116deg,
+    transparent 0 34%,
+    rgba(226, 49, 39, 0.2) 34% 44%,
+    transparent 44% 54%,
+    rgba(226, 49, 39, 0.13) 54% 64%,
+    transparent 64%
+  );
+  /* Two streaks behind a ranking row's points, and the small "////" hatch. */
+  --rk-streaks: linear-gradient(
+    122deg,
+    transparent 0 36%,
+    rgba(47, 111, 203, 0.1) 36% 48%,
+    transparent 48% 56%,
+    rgba(47, 111, 203, 0.07) 56% 64%,
+    transparent 64%
+  );
+  --hatch: repeating-linear-gradient(118deg, transparent 0 2px, #3f86e8 2px 6px, transparent 6px 10px);
+  /* Dark blue of the translucent layer over a photo under text: rgba(var(--sub), alpha). */
+  --sub: 8, 24, 58;
   --maxw: 1280px;
   --display: Oswald, Onest, sans-serif;
 }
@@ -70,7 +105,10 @@ html {
 }
 body {
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(1100px 520px at 88% 0, #dde9fb 0, rgba(221, 233, 251, 0) 70%),
+    linear-gradient(180deg, #f8fbff 0, var(--bg) 720px);
+  background-color: var(--bg);
   color: var(--ink);
   font-family: Onest, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 16px;
@@ -218,7 +256,7 @@ button:disabled {
 .brand .t2 {
   font-family: var(--display);
   font-weight: 600;
-  font-size: 19px;
+  font-size: 21px;
   letter-spacing: 0.4px;
   line-height: 1.05;
 }
@@ -247,7 +285,7 @@ nav.main a svg {
 }
 nav.main a:hover {
   color: var(--navy);
-  background: var(--blue-tint);
+  background: linear-gradient(180deg, rgba(234, 241, 251, 0) 0, var(--blue-tint) 100%);
 }
 nav.main a[aria-current="page"] {
   color: var(--navy);
@@ -269,24 +307,28 @@ nav.main .end {
   gap: 8px;
   min-height: 44px;
   padding: 10px 18px;
-  border-radius: var(--r);
+  border-radius: var(--r-sm);
   font-weight: 600;
   font-size: 15px;
   text-align: center;
 }
+/* Starts darker than --grad-blue: white text keeps 4.5:1 at the light corner. */
 .btn-p {
-  background: var(--blue);
+  background: linear-gradient(150deg, #3874d2 0%, #2f6fcb 45%, #1e4e9a 100%);
   color: #fff;
+  box-shadow: 0 6px 16px -8px rgba(30, 78, 154, 0.7);
 }
 .btn-p:hover {
   background: var(--blue-dark);
 }
 .btn-p:disabled {
   background: var(--ink-3);
+  box-shadow: none;
 }
 .btn-o {
-  border: 1.5px solid var(--navy);
+  border: 2px solid var(--navy);
   color: var(--navy);
+  background: rgba(255, 255, 255, 0.7);
 }
 .btn-o:hover {
   background: var(--navy);
@@ -295,10 +337,15 @@ nav.main .end {
 .btn-w {
   background: #fff;
   color: var(--navy);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.5);
+}
+.btn-w:hover {
+  background: var(--blue-tint);
 }
 .btn-gh {
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
   color: #fff;
+  background: rgba(18, 35, 63, 0.18);
 }
 .btn-gh:hover {
   background: rgba(255, 255, 255, 0.14);
@@ -322,7 +369,7 @@ nav.main .end {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.6px;
-  border-radius: 2px;
+  border-radius: 5px;
   text-transform: uppercase;
   line-height: 1.4;
 }
@@ -345,6 +392,8 @@ nav.main .end {
 .note {
   background: #fffbeb;
   border: 1px solid #f2e2ae;
+  border-left: 4px solid var(--amber);
+  border-radius: var(--r-sm);
   padding: 13px 16px;
   font-size: 15px;
   color: #6b5312;
@@ -353,6 +402,8 @@ nav.main .end {
 .note-error {
   background: var(--red-tint);
   border: 1px solid #f3c3bf;
+  border-left: 4px solid var(--red);
+  border-radius: var(--r-sm);
   color: var(--red-dark);
   padding: 13px 16px;
   font-size: 15px;
@@ -397,6 +448,43 @@ nav.main .end {
 main {
   display: block;
   flex: 1 0 auto;
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+/* A big pale tennis ball and two streaks behind the top of every page. */
+main::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -150px;
+  right: -150px;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.95) 0, rgba(214, 228, 248, 0.7) 60%, rgba(196, 216, 245, 0.55) 100%);
+  opacity: 0.75;
+  pointer-events: none;
+}
+main::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  width: 900px;
+  height: 640px;
+  background: linear-gradient(
+    126deg,
+    transparent 0 46%,
+    rgba(255, 255, 255, 0.75) 46% 50%,
+    transparent 50% 56%,
+    rgba(255, 255, 255, 0.55) 56% 59%,
+    transparent 59%
+  );
+  pointer-events: none;
 }
 .section {
   padding-top: 56px;
@@ -414,19 +502,25 @@ main {
 }
 .sec-h h1,
 .sec-h h2 {
-  font-size: 27px;
+  font-size: 32px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.6px;
 }
 .sec-h h1::before,
 .sec-h h2::before {
   content: "";
   display: inline-block;
-  width: 10px;
-  height: 22px;
-  background: var(--blue);
-  margin-right: 12px;
+  width: 9px;
+  height: 27px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #5b9cf0, #1e4e9a);
+  margin-right: 14px;
   vertical-align: -3px;
+}
+/* Live sections: an orange bar. */
+.sec-h.hot h1::before,
+.sec-h.hot h2::before {
+  background: var(--grad-orange);
 }
 .sec-h h3 {
   font-size: 20px;
@@ -435,10 +529,17 @@ main {
 .sec-h .more {
   margin-left: auto;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--blue);
-  border-bottom: 1px solid currentColor;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+  padding-right: 20px;
+  background: url(../images/chev.svg) right center / 8px 13px no-repeat;
   position: relative;
+}
+.sec-h .more:hover {
+  color: var(--blue-dark);
 }
 /* A 44px touch area; the underline stays under the text. */
 .sec-h .more::after {
@@ -449,6 +550,8 @@ main {
 .empty {
   background: var(--surface);
   border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
   padding: 22px 20px;
   color: var(--ink-2);
 }
@@ -468,48 +571,122 @@ main {
 }
 
 /* ---------- tournament cards ---------- */
-/* Each card draws its own 1px line, so a short row leaves no grey empty cells. */
+/* Date panel on the left: blue for РТТ, red for amateur, a ball at its foot. */
 .cards {
   display: grid;
-  gap: 1px;
-  padding: 1px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+/* Lists keep their column width when a group holds one or two tournaments. */
+.grp .cards {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
 }
 .tc {
-  background: var(--surface);
-  outline: 1px solid var(--line);
-  padding: 22px 22px 20px;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  border-left: 4px solid transparent;
   min-width: 0;
-}
-.tc.rtt {
-  border-left-color: var(--blue);
-}
-.tc.amateur {
-  border-left-color: var(--red);
+  background: var(--surface);
+  border: 1px solid rgba(222, 229, 240, 0.9);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 .tc:hover {
-  background: #fbfcfe;
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px rgba(18, 35, 63, 0.05),
+    0 16px 32px -14px rgba(30, 78, 154, 0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tc {
+    transition: none;
+  }
+  .tc:hover {
+    transform: none;
+  }
 }
 .tc:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
 }
+.tc-d {
+  position: relative;
+  flex: none;
+  width: 116px;
+  padding: 22px 10px;
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  background: var(--grad-blue);
+}
+.tc.amateur .tc-d {
+  background: var(--grad-red);
+}
+.tc-d::after {
+  content: "";
+  position: absolute;
+  left: -22px;
+  bottom: -34px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12) 70%);
+}
 .tc .d {
+  position: relative;
+  z-index: 1;
+  display: block;
   font-family: var(--display);
-  font-size: 21px;
-  color: var(--red);
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.12;
   letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.tc-b {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 18px;
+}
+.tc-b::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 14px;
+  width: 92px;
+  height: 64px;
+  background: var(--streaks);
+  pointer-events: none;
+}
+.tc.amateur .tc-b {
+  background: linear-gradient(100deg, #fff 55%, #fff3f1 100%);
+}
+.tc.amateur .tc-b::before {
+  background: var(--streaks-red);
 }
 .tc .city {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   color: var(--ink-2);
-  margin: 6px 0 10px;
+  margin: 0 0 8px;
+  padding-right: 40px;
+}
+.tc .city svg {
+  flex: none;
+  color: var(--ink-2);
 }
 .tc h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 12px;
   line-height: 1.25;
@@ -517,9 +694,9 @@ main {
 .tc .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 6px 8px;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .tc .cat {
   font-size: 14px;
@@ -529,24 +706,60 @@ main {
   font-size: 14px;
   color: var(--ink-2);
   margin-top: auto;
-  padding-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
 }
 
 /* ---------- match row ---------- */
+/* A running match gets the orange panel with a ball; scores sit in small boxes. */
 .match {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
-  margin-bottom: 14px;
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.match.running {
+  border-color: #f7b98a;
+  padding-left: 58px;
+  background: linear-gradient(90deg, #fff 60%, #fff7f0 100%);
+}
+.match.running::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 58px;
+  background: var(--grad-orange);
+}
+.match.running::after {
+  content: "";
+  position: absolute;
+  left: -30px;
+  bottom: 22px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background:
+    url(../images/seam.svg) center / 100% 100% no-repeat,
+    radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.08) 70%);
 }
 .match .mh {
   display: flex;
   align-items: center;
   gap: 6px 14px;
-  padding: 11px 18px;
-  background: #f7f9fc;
+  padding: 11px 20px;
+  background: #f6f9fd;
   border-bottom: 1px solid var(--line);
   font-size: 14px;
   flex-wrap: wrap;
+}
+.match.running .mh {
+  background: linear-gradient(90deg, #fff1e5, #fff8f2);
+  border-bottom-color: #fbe0cb;
 }
 .match .mh .where {
   font-weight: 700;
@@ -559,11 +772,14 @@ main {
 .match .mh .st {
   white-space: nowrap;
 }
+.match.running .live-dot {
+  background: var(--orange);
+}
 .pl {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 13px 18px;
+  padding: 12px 20px;
   border-left: 4px solid transparent;
 }
 .pl + .pl {
@@ -574,10 +790,14 @@ main {
   font-weight: 700;
 }
 .pl .name {
-  font-size: 17px;
-  letter-spacing: 0.2px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+.pl.win .name {
+  font-weight: 700;
 }
 .pl .name a:hover {
   color: var(--blue);
@@ -586,11 +806,16 @@ main {
   margin-left: auto;
   display: flex;
   align-items: center;
+  gap: 6px;
   flex: none;
 }
 .pl .sets > span {
-  width: 44px;
-  text-align: center;
+  width: 40px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  background: #f1f4f9;
   font-family: var(--display);
   font-size: 22px;
   color: var(--ink-2);
@@ -600,21 +825,27 @@ main {
   color: var(--navy);
 }
 .pl .sets > span.cur {
-  color: var(--red);
+  color: var(--red-dark);
+  background: var(--red-tint);
 }
 .pl .sets sup {
-  font-size: 12px;
+  font-size: 11px;
   position: absolute;
-  top: -2px;
-  margin-left: 1px;
+  top: 3px;
+  right: 4px;
+  line-height: 1;
 }
 .pl .sets .game {
-  background: var(--lime);
+  width: 46px;
+  background: linear-gradient(180deg, #ffd27a, var(--amber));
+  border: 1px solid #f2a93b;
   color: var(--navy);
-  margin-left: 6px;
+  margin-left: 2px;
 }
 .pl .sets .word {
   width: auto;
+  height: auto;
+  background: none;
   font-family: inherit;
   font-size: 15px;
   color: var(--navy);
@@ -626,16 +857,20 @@ main {
   /* On a narrow phone the time moves to its own line instead of squeezing the links. */
   flex-wrap: wrap;
   gap: 0 18px;
-  padding: 6px 18px;
+  padding: 4px 20px;
   border-top: 1px solid var(--line);
   font-size: 14px;
   color: var(--ink-2);
   min-height: 44px;
 }
+.match.running .mf {
+  background: #fffaf5;
+  border-top-color: #fbe0cb;
+}
 /* The underline sits under the word, not at the bottom of the 44 px tap area. */
 .match .mf a {
-  text-decoration: underline;
-  text-decoration-color: var(--line);
+  text-decoration: underline dotted;
+  text-decoration-color: var(--ink-3);
   text-decoration-thickness: 1px;
   text-underline-offset: 5px;
   font-weight: 600;
@@ -643,6 +878,13 @@ main {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+}
+.match .mf a:hover {
+  color: var(--blue);
+}
+/* The card clips its corners; the ring goes inside the link. */
+.match .mf a:focus-visible {
+  outline-offset: -3px;
 }
 .match .mf a,
 .match .mf .time {
@@ -658,17 +900,21 @@ main {
 }
 
 /* ---------- tables ---------- */
+/* The scroll box is the rounded card; the table inside has no frame of its own. */
 .table-wrap {
   overflow-x: auto;
   /* Hidden column labels are absolute: without this they escape the scroll box and widen the page. */
   position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
 }
 table.data {
   width: 100%;
   border-collapse: collapse;
   background: var(--surface);
   font-size: 15px;
-  border: 1px solid var(--line);
 }
 table.data th {
   text-align: left;
@@ -677,6 +923,7 @@ table.data th {
   color: var(--ink-2);
   font-weight: 600;
   padding: 14px;
+  background: #f6f9fd;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
@@ -689,13 +936,13 @@ table.data tbody tr:last-child td {
   border-bottom: 0;
 }
 table.data tbody tr:hover {
-  background: #fafcfe;
+  background: #f8fbff;
 }
 .av {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--blue-tint);
+  background: linear-gradient(150deg, #eef4fd, #d9e7fa);
   color: var(--blue-dark);
   display: inline-grid;
   place-items: center;
@@ -708,18 +955,10 @@ table.data tbody tr:hover {
   font-size: 22px;
   color: var(--ink-2);
 }
-.medal.m1 {
-  color: var(--gold);
-}
-.medal.m2 {
-  color: var(--silver);
-}
-.medal.m3 {
-  color: var(--bronze);
-}
 .pts-big {
   font-family: var(--display);
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 500;
   color: var(--navy);
 }
 
@@ -734,13 +973,14 @@ table.data tbody tr:hover {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border: 1px solid var(--line);
-  border-radius: 100px;
+  border-radius: 16px;
   font-size: 15px;
   font-weight: 600;
   color: var(--ink-2);
   background: var(--surface);
+  box-shadow: 0 4px 12px -8px rgba(30, 78, 154, 0.35);
 }
 .pill:hover {
   border-color: var(--blue);
@@ -748,7 +988,7 @@ table.data tbody tr:hover {
 }
 .pill[aria-current="true"],
 .pill[aria-pressed="true"] {
-  background: var(--navy);
+  background: linear-gradient(180deg, #1b3563, var(--navy));
   border-color: var(--navy);
   color: #fff;
 }
@@ -779,30 +1019,41 @@ table.data tbody tr:hover {
 }
 .days a[aria-current="true"] {
   border-bottom-color: var(--red);
+  background: linear-gradient(180deg, rgba(253, 237, 236, 0), var(--red-tint));
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
 }
 .days a[aria-current="true"] b {
   color: var(--red);
 }
 
 /* ---------- footer ---------- */
+/* The author's navy picture with streaks and a ball at the right, under a translucent dark blue
+   layer: strongest under the contacts, lighter in the middle, again under the menu. */
 .site-foot {
-  background: var(--navy);
+  background:
+    linear-gradient(90deg, rgba(var(--sub), 0.78) 0, rgba(var(--sub), 0.55) 50%, rgba(var(--sub), 0.68) 100%),
+    url(../images/footer-bg.webp) right center / cover no-repeat,
+    #0b1f4a;
   color: #fff;
-  padding: 48px 0 0;
+  padding: 52px 0 0;
   margin-top: 40px;
 }
 .fgrid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  gap: 40px;
+  gap: 48px;
   padding-bottom: 40px;
+}
+.fgrid > nav {
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  padding-left: 64px;
 }
 .site-foot h2 {
   font-size: 13px;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.6px;
   color: #a9b8ce;
-  margin: 0 0 16px;
-  font-weight: 600;
+  margin: 0 0 12px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 .site-foot ul {
@@ -810,14 +1061,17 @@ table.data tbody tr:hover {
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 4px;
-  font-size: 15px;
+  gap: 2px;
+  font-size: 16px;
+  max-width: 240px;
 }
 .site-foot ul a {
-  color: #c8d6e8;
-  display: inline-flex;
+  color: #dbe5f3;
+  display: flex;
   align-items: center;
   min-height: 44px;
+  padding-right: 22px;
+  background: url(../images/chev-light.svg) right center / 8px 13px no-repeat;
 }
 .site-foot ul a:hover {
   color: #fff;
@@ -825,41 +1079,49 @@ table.data tbody tr:hover {
 .fb {
   display: flex;
   align-items: center;
-  gap: 13px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 .fb svg {
-  width: 42px;
-  height: 53px;
+  width: 48px;
+  height: 61px;
 }
 .fb .t2 {
   font-family: var(--display);
-  font-size: 17px;
+  font-size: 21px;
 }
 .fb .t1 {
-  font-size: 10px;
-  letter-spacing: 1.5px;
+  font-size: 11px;
+  letter-spacing: 1.8px;
   color: #a9b8ce;
 }
 .report {
   color: #fff;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 14px;
 }
 .fadr {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   font-size: 15px;
-  color: #c8d6e8;
+  color: #dbe5f3;
   margin: 0;
 }
 .fadr div {
   display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
+  grid-template-columns: 116px minmax(0, 1fr);
   gap: 12px;
 }
 .fadr dt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: #a9b8ce;
+}
+.fadr dt svg {
+  flex: none;
+  color: #fff;
 }
 .fadr dd {
   margin: 0;
@@ -868,11 +1130,11 @@ table.data tbody tr:hover {
 .fadr a {
   position: relative;
   color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
 }
 .fbot {
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 16px 0;
+  padding: 14px 0;
   display: flex;
   gap: 8px 24px;
   font-size: 14px;
@@ -888,16 +1150,19 @@ table.data tbody tr:hover {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  padding-right: 20px;
+  background: url(../images/chev-light.svg) right center / 7px 12px no-repeat;
 }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1080px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .fgrid {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+  .fgrid > nav {
+    border-left: 0;
+    padding-left: 0;
   }
   .section {
     padding-top: 44px;
@@ -947,15 +1212,63 @@ table.data tbody tr:hover {
   nav.main a svg {
     display: none;
   }
-  .cards {
-    grid-template-columns: 1fr;
+  .tc-d {
+    width: 88px;
+    padding: 18px 6px;
+  }
+  .tc .d {
+    font-size: 22px;
+  }
+  .tc-b {
+    padding: 16px 16px 14px;
+  }
+  .tc h3 {
+    font-size: 18px;
   }
   .sec-h {
     margin-bottom: 20px;
   }
   .sec-h h1,
   .sec-h h2 {
-    font-size: 23px;
+    font-size: 25px;
+  }
+  .sec-h h1::before,
+  .sec-h h2::before {
+    width: 7px;
+    height: 21px;
+    margin-right: 11px;
+  }
+  main::before {
+    width: 340px;
+    height: 340px;
+    top: -60px;
+    right: -130px;
+  }
+  main::after {
+    width: 420px;
+    height: 360px;
+  }
+  .match.running {
+    padding-left: 8px;
+  }
+  .match.running::before {
+    width: 8px;
+  }
+  .match.running::after {
+    display: none;
+  }
+  .fadr div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  /* Phone: the tall footer would blow the ball up behind the text. The picture is a small band
+     in the top right corner, faded into plain navy before the contacts start. */
+  .site-foot {
+    background:
+      linear-gradient(180deg, rgba(11, 31, 74, 0) 0, rgba(11, 31, 74, 0.35) 110px, #0b1f4a 230px),
+      linear-gradient(90deg, rgba(var(--sub), 0.78) 0, rgba(var(--sub), 0.4) 100%),
+      url(../images/footer-bg.webp) right -150px top / 640px auto no-repeat,
+      #0b1f4a;
   }
   .match .mh {
     padding: 10px 14px;
@@ -980,9 +1293,16 @@ table.data tbody tr:hover {
   .pl .name {
     font-size: 16px;
   }
+  .pl .sets {
+    gap: 4px;
+  }
   .pl .sets > span {
     width: 30px;
+    height: 36px;
     font-size: 19px;
+  }
+  .pl .sets .game {
+    width: 36px;
   }
   .match .mf {
     padding: 0 14px;

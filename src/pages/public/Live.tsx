@@ -24,7 +24,7 @@ export function Live(_props: { id?: string }) {
 
   return (
     <section className="wrap section">
-      <div className="sec-h">
+      <div className="sec-h hot">
         <h1>Онлайн-счёт</h1>
         <span className="live-day">Сегодня, {dayLong(data.today)}</span>
       </div>

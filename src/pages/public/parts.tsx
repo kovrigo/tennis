@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import type { FileInfo, NewsCard as Card, PlayerFull, TournamentCard } from "../../api-types.ts";
+import { LeagueArt, firstLeague } from "../../components/League.tsx";
 import { KindTag, placeText } from "../../components/TournamentCard.tsx";
 import { dateRange, dayFull, fileKind, fileSize } from "../../format.ts";
 import { Link } from "../../router.tsx";
@@ -11,7 +12,8 @@ export const fileHref = (f: FileInfo) => `/api/files/${f.id}`;
 /** "Положение, PDF, 1,2 МБ". */
 export const regulationText = (f: FileInfo) => `Положение, ${fileKind(f.type)}, ${fileSize(f.size)}`;
 
-/** Big tournament block: home hero and the tournament page header. Blue for РТТ, red for amateur. */
+/** Big tournament block: home hero and the tournament page header. Blue for РТТ, red for amateur;
+ *  the league picture of the first division that has one. */
 export function TournamentHead({
   t,
   withYear,
@@ -24,8 +26,10 @@ export function TournamentHead({
   finishedTag?: boolean;
   children: ReactNode;
 }) {
+  const league = firstLeague(t.divisions);
   return (
     <div className={`sl ${t.kind}`}>
+      {league && <LeagueArt league={league} className="sl-art" />}
       <div className="kicker">
         <span className="dates num">{dateRange(t.startDate, t.endDate, withYear)}</span>
         <KindTag kind={t.kind} />

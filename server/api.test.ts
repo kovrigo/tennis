@@ -100,6 +100,7 @@ describe("static files", () => {
   mkdirSync(join(dist, "assets"));
   writeFileSync(join(dist, "index.html"), "<!doctype html>index");
   writeFileSync(join(dist, "assets", "app.js"), "console.log(1)");
+  writeFileSync(join(dist, "assets", "league-men.webp"), "RIFF");
   const server = createServer((req, res) => {
     try {
       serveStatic(dist, req, res);
@@ -117,6 +118,10 @@ describe("static files", () => {
   test("a page path gets index.html, an existing asset is served", async () => {
     expect(await (await fetch(`${base}/tournaments/5`)).text()).toContain("index");
     expect((await fetch(`${base}/assets/app.js`)).headers.get("content-type")).toBe("text/javascript");
+  });
+
+  test("a league picture is served as image/webp", async () => {
+    expect((await fetch(`${base}/assets/league-men.webp`)).headers.get("content-type")).toBe("image/webp");
   });
 
   test("a missing asset from an older release is 404, not index.html", async () => {
