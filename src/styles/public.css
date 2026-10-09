@@ -890,6 +890,11 @@ ul.places {
   flex-wrap: wrap;
   gap: 16px;
 }
+/* The empty plate is as wide as one points card. */
+.pgroups > .empty {
+  flex: 0 1 420px;
+  min-width: 0;
+}
 /* Points card: league picture or a blue panel with a ball on the left. */
 .pg {
   position: relative;
@@ -1015,6 +1020,10 @@ ul.places {
   height: 56px;
   background: var(--streaks);
   pointer-events: none;
+}
+/* Women's and girls' tournaments: pink date panel. */
+.pres li.pink .d {
+  background: var(--grad-pink);
 }
 .pres .d {
   position: relative;

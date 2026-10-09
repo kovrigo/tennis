@@ -63,6 +63,7 @@
   --shadow: 0 1px 2px rgba(18, 35, 63, 0.05), 0 10px 28px -12px rgba(30, 78, 154, 0.28);
   --grad-blue: linear-gradient(150deg, #4a8ff0 0%, #2f6fcb 45%, #1e4e9a 100%);
   --grad-red: linear-gradient(150deg, #f26a5c 0%, #d8392d 50%, #a8231b 100%);
+  --grad-pink: linear-gradient(150deg, #f47aae 0%, #e0498f 50%, #b42a6c 100%);
   --grad-orange: linear-gradient(180deg, #ffb13c 0%, #f2711c 100%);
   /* Two thin diagonal streaks for a card corner. */
   --streaks: linear-gradient(

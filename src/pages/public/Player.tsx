@@ -31,7 +31,9 @@ function PlayerView({ data }: { data: PlayerPage }) {
           <h2>Очки</h2>
         </div>
         {data.groups.length === 0 ? (
-          <Empty>Очков пока нет</Empty>
+          <div className="pgroups">
+            <Empty>Очков пока нет</Empty>
+          </div>
         ) : (
           <div className="pgroups">
             {data.groups.map((g) => {
@@ -60,7 +62,10 @@ function PlayerView({ data }: { data: PlayerPage }) {
         ) : (
           <ul className="pres">
             {data.results.map((r) => (
-              <li key={`${r.tournamentId}-${r.divisionId}`}>
+              <li
+                key={`${r.tournamentId}-${r.divisionId}`}
+                className={["women", "girls"].includes(leagueOf(r.divisionName) ?? "") ? "pink" : undefined}
+              >
                 <span className="d num">{dateRange(r.startDate, r.endDate, true)}</span>
                 <Link className="pres-t" to={`/tournaments/${r.tournamentId}`}>
                   {r.tournamentName}
