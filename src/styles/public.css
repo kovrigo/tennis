@@ -266,10 +266,11 @@
 /* ---------- ranking ---------- */
 /* One look for every ranking: a pale blue panel with streaks; each place is a white pill row
    with a thin place colour on a slanted left edge and two streaks behind the points.
-   Place colour: gold, blue, orange, then grey. The slant is a mask cut at 10°; the colour is
-   a band on the same angle, so the two stay parallel. Both sit in a 1000px-tall layer pinned to
-   the row's bottom left corner (173.6px = 1000px × sin 10°): the slant starts at that corner,
-   so a tall wrapped row keeps its band from bottom to top. */
+   Place colour: gold, blue, orange, then grey. The colour is a 5px bar from the row's top to
+   its bottom, rounded alike at both ends and skewed 10° from the bottom left corner, so a tall
+   wrapped row keeps it from bottom to top. The white starts at the bar's middle on the same
+   slant, a 1000px-tall layer pinned to that corner (173.6px = 1000px × sin 10°), so nothing
+   white shows past the bar's rounded ends. */
 .rk-panel {
   position: relative;
   background:
@@ -288,9 +289,16 @@
   border-radius: 16px;
   box-shadow: 0 1px 2px rgba(18, 35, 63, 0.04), 0 14px 30px -18px rgba(30, 78, 154, 0.35);
 }
+/* Tables and place lists start their rows near the top: the panel's streak would show between
+   the first rows, so they go without it. */
+.table-wrap.rk-panel,
+ul.places.rk-panel {
+  background: linear-gradient(165deg, #f6f9ff 0%, #e3edfa 100%);
+}
 .rk-row,
 .rk-cells {
   --rk: #aab6c8;
+  --rk-bg: #fff;
 }
 .rk-row:has(.m1),
 .rk-row.m1,
@@ -312,27 +320,32 @@
 }
 .rk-row,
 .rk-cells > :first-child {
-  -webkit-mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
-  mask: linear-gradient(100deg, transparent 173.6px, #000 174.1px) left bottom / 100% 1000px no-repeat;
+  position: relative;
+}
+.rk-row::before,
+.rk-cells > :first-child::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  border-radius: 2.5px;
+  background: var(--rk);
+  transform: skewX(-10deg);
+  transform-origin: left bottom;
 }
 .rk-row {
-  position: relative;
   background:
-    linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px) left bottom / 100% 1000px
-      no-repeat,
     var(--rk-streaks) right 54px center / 92px 100% no-repeat,
-    #fff;
-  border-radius: 14px;
+    linear-gradient(100deg, transparent 176.1px, var(--rk-bg) 176.6px) left bottom / 100% 1000px no-repeat;
+  border-radius: 0 14px 14px 0;
 }
 .rk-cells > * {
-  background-color: #fff;
+  background-color: var(--rk-bg);
 }
 .rk-cells > :first-child {
-  background-image: linear-gradient(100deg, transparent 173.6px, var(--rk) 174.1px 179.1px, transparent 179.6px);
-  background-position: left bottom;
-  background-size: 100% 1000px;
-  background-repeat: no-repeat;
-  border-radius: 14px 0 0 14px;
+  background: linear-gradient(100deg, transparent 176.1px, var(--rk-bg) 176.6px) left bottom / 100% 1000px no-repeat;
 }
 .rk-cells > :last-child {
   background-image: var(--rk-streaks);
@@ -341,10 +354,10 @@
   background-repeat: no-repeat;
   border-radius: 0 14px 14px 0;
 }
-.rk-cells:hover > * {
-  background-color: #f8fbff;
+.rk-cells:hover {
+  --rk-bg: #f8fbff;
 }
-/* The rows' shadow: a mask would cut a box shadow, a filter on the list is drawn after it. */
+/* The rows' shadow: a filter on the list follows the slanted edge; a box shadow would not. */
 .rk-list,
 .rk-table {
   filter: drop-shadow(0 6px 9px rgba(30, 78, 154, 0.11));
